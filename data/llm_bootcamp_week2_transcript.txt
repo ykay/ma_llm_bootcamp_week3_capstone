@@ -1,0 +1,1474 @@
+0:01
+Tim Lee: Okay. So this session, we're going to be talking all about how to retrieve data
+0:08
+Tim Lee: for your bots in an effective way. You know a misconception is that retrieval augmented generation? So that's the process. That's the vocabulary word that people use to anytime. You want your bot to be able to answer. Something like a person has a support ticket. You want them to know well who the customer is. You know. What products have they have bought, you know. A variety of other things. So a lot of people just associate rag with vector databases and embeddings. But that's a little bit of a narrow view.
+0:36
+Tim Lee: So rag is actually the process of fetching via traditional search like elasticsearch as well as Api based search. So just fetching things via an Api.
+0:49
+Tim Lee: and we have a new toy Tim Lee: in the last year. There's this new thing that's available to us
+0:56
+Tim Lee: that allows you to do semantic search. So instead of a keyword based search, which is what we're used to, then it actually has
+1:06
+Tim Lee: some understanding of your sentence and is a and has does an interesting job of matching it semantically instead of via keywords. And so that's implemented using vector databases and embeddings.
+1:20
+Tim Lee: We're going to leave here today, I think, with a pretty good idea of what embeddings are, and what a pretty good idea of what vector databases are.
+1:28
+Tim Lee: So before we dive in
+1:34
+Tim Lee: one question which I'd be curious to hear in the chat as as we as we warm up is. I was asking like one of the goals that we want to do every week is we want to
+1:42
+Tim Lee: really start to build intuition, learn little practical things about building Lm solutions. And I'm I'm curious. What's starting to emerge from you
+1:50
+Tim Lee: like what any like little observations like. Oh, this is slower than I thought, or this is faster than I thought or like, and one thing I'm hoping that you'll understand is like, Okay, this is Gpt. 4. 0, mini versus Gpt. 4 versus 3.5 Turbo, and just getting starting to get a flavor for like
+2:07
+Tim Lee: when you can use which ones, and when they start to kind of like, you know, break down. So. Yeah, I'm curious. If you can share in your chat little little tidbits of of observations, I'd be curious to share that with with each other.
+2:21
+Tim Lee: But in the meantime Tim Lee: I am going to do. I want to share my screen. Think so. Okay, you can see my screen. Yes.
+2:31
+Tim Lee: okay, cool. So we're gonna do a little bit of a warm up before we do today's topic. So one thing is is that like I'm gonna talk a little bit about neural networks and stuff every day. So every week. So remember that
+2:48
+Tim Lee: you don't need to deeply understand the fundamentals. You can treat it as a back black box and build the solutions with that in mind. But I think it's it's always good to understand the abstractions like one layer below where you're operating.
+3:01
+Tim Lee: Because we're not going to do too much hands on with neural networks, at least not until we get to fine tuning. I want to start to see if I get these concepts to soak into your brain, because when we go and do fine tuning in about 3 or 4 weeks, it's it's gonna be helpful for you to have like soaked into these topics. The thing that I'm gonna the technique that I'm gonna use because I'm I'm not doing something hands on with that is, I want you to explain it to each other.
+3:27
+Tim Lee: So we'll do a quick breakout room session 5, 10 min, right? 7 min, maybe. And basically, your mission is 2 things.
+3:36
+Tim Lee: 1st is to answer these questions, use Chat Gbt, and just, but just express it to each other. Explain it in your own words to each other. We'll put you in breakout rooms, and then
+3:49
+Tim Lee: I want you to come up with another question, too. Like as you're as you're exploring this.
+3:55
+Tim Lee: and you're digesting the explanation. I want you to also come up with a curiosity, a question. Something to dig in more. So I I'm I'm doing this. I'm forcing you to do this to kind of like cause, you know, when you explain it to someone or you try to explain it. You just have to understand. You'll you'll remember it better, and you'll just have to explain it. I'll be able to explain it. So
+4:15
+Tim Lee: I'm going to open up breakout rooms. Quick. So just to recap your mission. Answer these, you know, 8 quests.
+4:25
+Tim Lee: 7 questions to each other. Explain it as well as you can, and then come up with an additional question as kind of a as kind of a curiosity and a related concept.
+4:36
+Tim Lee: Alright. So I'm gonna open up breakout rooms. And then this will be the only breakout room session for today.
+4:41
+Tim Lee: So we just
+4:49
+Tim Lee: alright rooms are open.
+5:22
+Tim Lee: Okay? Cool. Okay. So I'm going to
+5:28
+Tim Lee: briefly Tim Lee: demo this. But even as I'm doing this for the 1st few milestones follow along with me. So we'll kind of like do it slowly enough to for you to follow along. And then after that, I'm just gonna kind of walk through it.
+5:44
+Tim Lee: You can kind of do it later. If you'd like to follow me, you may. But if it gets like kind of stressful, as I heard it did last week, then, you know, also, just like, try to slowly. Just just follow along with your with your eyes. So go ahead and create a new project. I'm gonna show you what
+6:02
+Tim Lee: is here. Tim Lee: So Tim Lee: the mission here is.
+6:08
+Tim Lee: you know, we want to. Tim Lee: We have a Tim Lee: I'm just gonna Tim Lee: look at.
+6:14
+Tim Lee: actually, can you mute? Can everyone mute themselves real quick.
+6:26
+Tim Lee: Okay? So Tim Lee: what we have here is a data folder. Now, as you follow the instructions.
+6:33
+Tim Lee: you can dump any number of files into this data folder, and they can be all of the formats that's described in this link.
+6:44
+Tim Lee: And then Tim Lee: what you're going to do is what you'll be able to do is
+6:52
+Tim Lee: when I run Tim Lee: this file right here. So this has a series of lines which you'll understand once once we finish this, but for now it's just
+7:05
+Tim Lee: the core of it is just these 4 lines. Tim Lee: This is the tracing callback handlers.
+7:11
+Tim Lee: So these 4 lines is going to do all the things. And then what this document is here is. It's our
+7:19
+Tim Lee: It's code. Path's five-year strategic plan. Tim Lee: right? So it's it's a it's quite a long document. It's like 55, 55 pages.
+7:28
+Tim Lee: And then if I click on Demo this and I run this.
+7:34
+Tim Lee: I'm gonna do Tim Lee: control, return to run it. You can see the second sticking away. So this document is called a Jupyter notebook.
+7:42
+Tim Lee: So those of you who are in the python world already know what a Jupyter notebook is for those of you who are new to python world. It's a convenient kind of interactive environment, so that you don't have to kind of keep on running the entire script. The way it works is I can run this code, block. It outputs this
+8:01
+Tim Lee: thing that I can say, run, run this one Tim Lee: and so it keeps everything in memory. And it's like, Okay, cool. I've we've served 20,000 students, you know.
+8:13
+Tim Lee: what are the main, you know. Tim Lee: aspects
+8:18
+Tim Lee: strategic plan.
+8:24
+Tim Lee: So it's it's such and such thing. Let's see, let me double click on this. The main aspects include scaling nationally and regionally improving effectiveness while
+8:33
+Tim Lee: okay, developing sustainable sources of revenue. So what are Tim Lee: the source?
+8:41
+Tim Lee: The sources revenue?
+8:48
+Tim Lee: Okay, so Tim Lee: so this is pretty cool. Right? So this is something that I think people have demoed before, which, like, How do you talk documents? But what you're going to get out of it by this session is, you're gonna know exactly how it works under the hood so that you can tune and modify. And actually, there's quite a lot of different techniques that you can apply to make this more sophisticated and work better for for your use case.
+9:12
+Tim Lee: So Tim Lee: yeah, go ahead. And
+9:19
+Tim Lee: hopefully, you've done these steps, you know, install the dependencies, and then you can copy this in
+9:27
+Tim Lee: to the Tim Lee: to your, to your notebook.
+9:33
+Tim Lee: Now. Priyanka Shah: Sorry. Are you running this from Vs code itself, or like.
+9:41
+Tim Lee: This is this, you know, I highly recommend, you know, giving cursor a try. Cursor is based off of Vs code.
+9:48
+Tim Lee: And Tim Lee: it's it's basically Vs code, except that it has all of these cool AI integrations which I'll slowly demo like, perhaps during the during the session.
+10:02
+Tim Lee: so Tim Lee: well worth the $20 a month expenditure, but they have a free trial that you should. You should definitely try out.
+10:12
+Tim Lee: okay. So as you're getting set up with that. Let me unpack what it's what each of these lines are doing.
+10:19
+Tim Lee: So Tim Lee: this 1st line, I think, is the easiest to understand
+10:25
+Tim Lee: so simple directory reader, data dot load data. Tim Lee: So this is not doing any AI or Lm stuff. This is simply a file parser.
+10:37
+Tim Lee: So what it understands is it understands the Pdf format, the word Microsoft word format, a bunch of other formats and all. It's doing like, what is a document? It's a very simple object that just has
+10:53
+Tim Lee: text as a giant string Tim Lee: and a dictionary of metadata, and by default the Metadata dictionary is blank. So you have to kind of attach whatever meta metadata you feel is is relevant, or it's largely blank. Right? There's some automated insertions like you'll put the page number and and things like that. But you can also like augment it in different ways, or make like, put more like semantic information from it. But by the time this happens
+11:24
+Tim Lee: you get documents. Tim Lee: and then, and those documents are just very lightweight containers of text.
+11:33
+Tim Lee: One additional thing, though, is that for long documents it creates them as chunks.
+11:39
+Tim Lee: so it separates them into like you know some number of documents. I I think I printed this out
+11:46
+Tim Lee: here. I'll I'll demonstrate Tim Lee: here. So this is this. This is what I would do with the cursor which would be like, I would say, add
+11:56
+Tim Lee: debug for a number of docs.
+12:01
+Tim Lee: Where I obviously could have typed it. But you, you can. Tim Lee: you know, have it? Do that, and I'll I'll run this thing right here.
+12:10
+Tim Lee: So it split my single document into 54 docs.
+12:18
+Tim Lee: so Tim Lee: this 1st line, like I said, is just this parser.
+12:27
+Tim Lee: this second line. Tim Lee: This is what we're going to unpack and learn today. Tim Lee: which is
+12:33
+Tim Lee: the way that the semantic matching is work work works Tim Lee: is.
+12:40
+Tim Lee: And I should have like a graphic for this.
+12:49
+Tim Lee: But the Tim Lee: what it does is it takes
+12:54
+Tim Lee: a string. Tim Lee: It runs it through this black box as input and the output of it is an array of numbers.
+13:05
+Tim Lee: So it's a fixed array size, so I can put a single word in there. It goes into the embedding model and then generates a
+13:15
+Tim Lee: roughly 1,000 element array. Tim Lee: I can put a sentence in in as input, and it will also generate a thousand item array. I can put a paragraph in it, and it will turn that paragraph into a thousand item array.
+13:29
+Tim Lee: I can even put an image. This will blow your mind. Tim Lee: I can put an image into the model, and it will change it into a thousand element array.
+13:38
+Tim Lee: So that's the 1st step of like what this thing is doing.
+13:45
+Tim Lee: It runs through, and it iterates through little pieces of the document. So it's going to take that document, and it's going to just break it into
+13:56
+Tim Lee: roughly 1,000 character chunks. And you can configure the size of the of the chunk.
+14:01
+Tim Lee: and it runs through each one and kind of like a Tim Lee: code like a spy machine. It changes it into this vector of numbers.
+14:11
+Tim Lee: and then it stores them in a database. Tim Lee: So that's all this line is doing.
+14:18
+Tim Lee: you know. So you're wondering yourself Tim Lee: why. Tim Lee: what is the meaning of these numbers. And what what does that do for me?
+14:28
+Tim Lee: So that that question will be answered in one second. Tim Lee: So Tim Lee: this one right here, this doesn't really do anything it just creates. It creates an object. So we can. We can skip this if you looked at the lines of code in here, it's like it's. It's just it's just a new. It's just a constructor.
+14:45
+Tim Lee: And then Tim Lee: this line Tim Lee: we are gonna look in great detail. So
+14:54
+Tim Lee: the the fact that it's called an engine makes it sound a little fancier than it is. It's only doing a few discrete steps.
+15:01
+Tim Lee: 1st thing it does is it takes this sentence, and it also changes it into a
+15:08
+Tim Lee: vector, which is an array of these floats. Tim Lee: vector embeddings, array of floats. These 3 words are synonyms in this case.
+15:19
+Tim Lee: So people say, Oh, these are embeddings. Tim Lee: or this is a vector or this is an array of a thousand floats. It all means the same thing.
+15:28
+Tim Lee: So Tim Lee: it takes this query, and it turns it into an array. Now, here's the magic.
+15:38
+Tim Lee: all right. The magic trick is Tim Lee: that when I take that array
+15:43
+Tim Lee: I'll iterate through every single other array that's inside of that vector database.
+15:51
+Tim Lee: And when I calculate the distance between those arrays
+15:58
+Tim Lee: or the similarity between those arrays Tim Lee: ones that are related to each other have high similarities.
+16:07
+Tim Lee: And that's that's the magic of Tim Lee: vector search. And that's so what it's doing is it's
+16:15
+Tim Lee: taking my question. Tim Lee: My question was, you know, what years does the strategic plan cover?
+16:24
+Tim Lee: That is going to be compared with these 1,000 character snippets all throughout the document.
+16:32
+Tim Lee: and it's gonna Tim Lee: Give a similarity score
+16:37
+Tim Lee: for each one of them. And then I can choose to say, Hey, give me like the top X number.
+16:46
+Tim Lee: you know, sorted by the most matched of just these, like random snippets of text.
+16:53
+Tim Lee: So Tim Lee: one thing about rag and one thing about like this type of matching is. It's, I think people like overemphasize. How like magical or wonderful it is.
+17:04
+Tim Lee: You can't ask. You cannot ask it. Tim Lee: Things like. Tim Lee: Hey, what is the what is the general gist of this document.
+17:15
+Tim Lee: you know? Because unless there's some Tim Lee: summary statement within the document, so that's why it's really good for like support.
+17:24
+Tim Lee: because support tends to be common issues, and then common resolutions.
+17:31
+Tim Lee: So usually there is probably a single point Tim Lee: in the document. That kind of like matches, and and if it's returned, you know can be answered.
+17:41
+Tim Lee: So let me let me finish. What else this this query engine is doing. So it then Tim Lee: has that chunk of stuff.
+17:48
+Tim Lee: a chunk of documents? Tim Lee: And then it passes it to an Llm. And says, Hey, this is what the user asked.
+17:55
+Tim Lee: These are some of the snippets that seem related. Can you formulate an answer?
+18:01
+Tim Lee: You know, from that? Tim Lee: Okay, so we're going to revisit this in a couple of cycles.
+18:09
+Tim Lee: so Tim Lee: the
+18:15
+Tim Lee: what I'm gonna do is I'm going to skip down
+18:20
+Tim Lee: to milestone 6.
+18:27
+Tim Lee: Okay, so that's the that's the general explanation, for, like how it's doing like document answering.
+18:36
+Tim Lee: Now, let's let's let's let's let's come back. Let's look at Embeddings again, and let's let's illustrate. Let's illustrate this more
+18:47
+Tim Lee: so. Tim Lee: if you'd like again. Click on Milestone 6.
+18:52
+Tim Lee: In fact, I will Tim Lee: also do this from Scratch. See if you can follow along if if you'd like. So if there's not a lot of typing here, so I think you should be able to.
+19:03
+Tim Lee: So I'm gonna create Tim Lee: a new file. Tim Lee: I'm gonna call it
+19:10
+Tim Lee: embeddings dot. Tim Lee: So the it's interactive python, i
+19:16
+Tim Lee: EY and B notebook. Tim Lee: IPYN b interactive python notebook.
+19:23
+Tim Lee: So hit enter. Tim Lee: and then I will Tim Lee: install
+19:30
+Tim Lee: Scikit.
+19:40
+Tim Lee: And I was looking at the chat for a second. Tim Lee: so I'll go to my terminal
+19:46
+Tim Lee: star scikit.
+19:51
+Tim Lee: and then I will Tim Lee: copy this
+19:58
+Tim Lee: 1st Tim Lee: snippet. Tim Lee: Now, what this snippet is is if you look at these
+20:06
+Tim Lee: 10 statements. 5 of them are questions.
+20:12
+Tim Lee: and then the next 5 are Tim Lee: matching answers to that question.
+20:21
+Tim Lee: So let's let's run that real quick. Tim Lee: So this I'll hit. Run.
+20:29
+Tim Lee: and then, while that's going, let me just check the chat.
+20:40
+Tim Lee: Okay? And so we're Gonna Tim Lee: Santiago, Santiago. We're going. We're going to answer the what's going on behind the semantic semantic matching black box right now.
+20:50
+Tim Lee: and Thomas will cover. Tim Lee: We'll cover Tim Lee: that Openai question. So these are these are both great questions.
+20:59
+Tim Lee: Okay, so first, st Tim Lee: let's simply explore Tim Lee: this line right here.
+21:07
+Tim Lee: So I have my 1st phrase, and then Tim Lee: I printed out just the 1st 5 numbers
+21:15
+Tim Lee: of that phrases embedding. So
+21:20
+Tim Lee: this
+21:28
+Tim Lee: sorry I'm just looking that people cannot seem to run. Jupiter Notebook interestingly.
+21:34
+Tim Lee: okay, so so if that, maybe you'll have to figure that out later, or or you can continue to to work on it. Or you can skip the notebook. You can actually just run this as a just a regular python file.
+21:45
+Tim Lee: And just just create a python file. And then just just, you know, type in python. And then the file name.
+21:53
+Tim Lee: and that will also that will also work.
+21:58
+Tim Lee: So this phrase, who was the 1st President of the United States, got changed into this sequence of numbers, plus a bunch of numbers that were truncated.
+22:11
+Tim Lee: Why, those back? Why, those numbers nobody nobody knows. Tim Lee: I'll I'll explain to. I'll explain to you later in a second like why why it still works.
+22:21
+Tim Lee: But for now all we know is it got changed into those numbers? Now look at the let's look at the similarity matrix.
+22:28
+Tim Lee: So Tim Lee: this is Tim Lee: the similarity with itself.
+22:36
+Tim Lee: So similarity goes from negative one to one Tim Lee: one means it's perfectly similar.
+22:44
+Tim Lee: minus one means it's the opposite 0 means it's it's neutral.
+22:50
+Tim Lee: although, interestingly, look at the scale here. So if you kind of like scan these numbers.
+22:58
+Tim Lee: and you see a lot of like things in the seventies. And let's let's look at the similarities this way. Which was
+23:07
+Tim Lee: the similarity between this sentence, who was the 1st President of the United States? What is the capital city of France.
+23:15
+Tim Lee: point 7 7 8 8. Tim Lee: Now, in some sense on a scale from negative one to 1.7 7 8 8 seems high.
+23:23
+Tim Lee: but at the same time I understand these 2 sentences Tim Lee: beyond being in English sentences. They're not really that related semantically.
+23:31
+Tim Lee: And so I'm going to kind of mentally say, well, in this embedding right now point 7 7 8 8 seems like to be very low as a match.
+23:38
+Tim Lee: and then you can keep on Tim Lee: you can keep on scrolling.
+23:43
+Tim Lee: and then ultimately you Tim Lee: check this one out. Oh, this one caught my eye. Point 9 3 1 9,
+23:51
+Tim Lee: and look at the statement, what is the largest planet in the solar system? Tim Lee: The largest planet in the solar system is Jupiter.
+24:00
+Tim Lee: That's pretty cool. Tim Lee: It has this Tim Lee: it has a higher score. Right?
+24:07
+Tim Lee: so Tim Lee: let's let's keep on testing it right? Cause like, maybe you're thinking, you know, the 1st thing that I thought when I saw this is like, is it just kind of like, almost like bag of words? Comparison, though, because this said largest planet, this is largest planet. This is solar system. This said solar system, you know. I mean.
+24:26
+Tim Lee: it's I wondered how much is it? Truly semantic? Ish
+24:31
+Tim Lee: versus, you know. Tim Lee: maybe just word similarities. So let's let's keep on testing it.
+24:39
+Tim Lee: Let's let's look at these set of questions. So these set of questions. Tim Lee: they
+24:45
+Tim Lee: were topically closer. So these are all more narrowly focused on space.
+24:52
+Tim Lee: So same code, except for the sentences are different. Tim Lee: So let's take a look at.
+24:57
+Tim Lee: Let's take a look at that
+25:07
+Tim Lee: and it's kind of interesting, because look at that. You see now, more in the eighties.
+25:12
+Tim Lee: right? So higher. Tim Lee: But at the same time you can see that for every row
+25:19
+Tim Lee: there's a peak value Tim Lee: that's Tim Lee: significantly different.
+25:25
+Tim Lee: Compare to the others. Tim Lee: so if I look at the elements here
+25:33
+Tim Lee: and I'd look for ones that are 90. So who was the 1st person to travel to space? Yuri was the 1st person to travel to space?
+25:45
+Tim Lee: look, let's look at one. That's a little bit higher. 81 Tim Lee: was the name of NASA's Rover that landed on Mars in 2,021, the planet known as the Red the planet known as the red planet is Mars.
+25:57
+Tim Lee: So interesting. Tim Lee: So let me make it even more challenging.
+26:02
+Tim Lee: Let me now use. I'm just gonna use one question.
+26:08
+Tim Lee: but then I'll have a bunch of different answers that are that use a lot of the same words
+26:15
+Tim Lee: just to see how it handles like that situation.
+26:24
+Tim Lee: So if I come over to Tim Lee: this one and run this one.
+26:33
+Tim Lee: so now Tim Lee: it happens to be the one that was correct.
+26:39
+Tim Lee: Had the highest similarity. Tim Lee: Although I wonder if it's noise versus or luck.
+26:48
+Tim Lee: you know, compared to Tim Lee: the others. Tim Lee: So I mean, it's not a it's not a it's not a fact checker.
+26:57
+Tim Lee: Right? So you so it's not like that. So Tim Lee: so it's interesting.
+27:03
+Tim Lee: Now. Tim Lee: what's also surprising is, if you had written a paragraph.
+27:13
+Tim Lee: and then, in the midst of that paragraph, it answered the question. Tim Lee: your match with the paragraph itself
+27:21
+Tim Lee: will be higher as well. So, Joe, just the fact that. There's a semantic relationship with an aspect of the paragraph
+27:30
+Tim Lee: will make that similarity score higher. Tim Lee: There's a limit to that
+27:36
+Tim Lee: like, for example, if you try to. Because you can change a whole page into a, vector you can change 2 pages into a vector
+27:43
+Tim Lee: so it starts to dilute the similarity score. If the chunk size is too big. So one thing that people talk a lot about with with vector is, Hey, what should the chunk size be?
+27:55
+Tim Lee: In other words, like, because the smaller the chunk. Tim Lee: the higher the similarity matches, but then the small you get too small and you lose a lot of context. And then you start to lose information that way, too.
+28:07
+Tim Lee: The easiest way to explore that is, to Tim Lee: have, like a sensitivity analysis and just
+28:13
+Tim Lee: range the chunk size over certain things, and then and then you'll be able to kind of like.
+28:20
+Tim Lee: you know. Get a sense for how that changes the similarity.
+28:25
+Tim Lee: So Tim Lee: let's Tim Lee: let's look and and discuss like these embeddings a little bit more.
+28:37
+Tim Lee: so Steve asks, how do you deal with queries that span a chunk, for instance, the sentence is found on 2 different pages.
+28:45
+Tim Lee: The sentence is found on like a matching thing is found on 2 pages.
+28:52
+Tim Lee: 2 parts of sentence so like Tim Lee: One thing that the
+28:57
+Tim Lee: the initial Tim Lee: loader is doing, and this as well as this, they are trying to divide in sensible regions. So they
+29:13
+Tim Lee: They are trying to. They don't. They try not to cut off sentences mid sentence. So they try to like create the documents or the sub documents as as paragraphs.
+29:21
+Tim Lee: It's not as good as some people will do, like semantic chunking, which is like, for example, they'll try to keep. They'll do more intelligent decisions to kind of keep related text together. But
+29:32
+Tim Lee: it can be hard to do in practice, because one of the biggest challenges for like indexing for rag is that the data is very messy and unstructured. So a lot of love has to go into the the data cleanup phase of it in order to make it work the best.
+29:53
+Tim Lee: See if you were. Tim Lee: hey? If you were to ask something that can't be answered based on the text, would it just give you whatever has the high similarity? And in that case is that yes, so the weakness of this is that
+30:07
+Tim Lee: it will return you documents. That's the highest match, but
+30:12
+Tim Lee: it may have no semantic bearing. It's just the highest, the best up. And so it's going to be. Have you have to like, really train your model to then say, well, answer, answer it, you know, if you can from that.
+30:29
+Tim Lee: So let me wrap up embeddings.
+30:34
+Tim Lee: which is Tim Lee: maybe asking the question. Tim Lee: and I see some Tim Lee: folks talking about it in the chat. But like, how? How is this black magic happening
+30:44
+Tim Lee: like, how is this. Tim Lee: how is this box able to generate
+30:50
+Tim Lee: these numbers? These are these arrays that somehow. Tim Lee: you know, have this property that they have. They're close in mathematical similarity. So we, we use a we use a similarity score called called cosine similarity.
+31:07
+Tim Lee: So it's relatively simple to understand. Do you remember vaguely that vectors are something that has a magnitude and a direction.
+31:15
+Tim Lee: So if you, if we're in 2 dimensions or 3 dimensions, it's easy to visualize, because you kind of like, see the arrow pointing to it. And so if I have
+31:24
+Tim Lee: 2 vectors. Tim Lee: and I want to compare the distance, I can do kind of what you learned 1st in school, which is like the Euclidean distance. In other words, take out a ruler and measure the 2
+31:35
+Tim Lee: points and see how close they are. So that's 1 type of similarity.
+31:41
+Tim Lee: But you can also measure like how close to the same direction they point.
+31:47
+Tim Lee: And so they realized that semantic similarity had a lot more to do with the direction that the vector was pointing
+31:55
+Tim Lee: rather than the distance between the 2 endpoints.
+32:00
+Tim Lee: And so they wanted to measure the angle because the angle tells you the distance, the the direction of the vector
+32:07
+Tim Lee: cosine of the angle is is basically really fast and easy to calculate, whereas the actual angle you have to take arc cosine of it.
+32:18
+Tim Lee: And so if you just do cosine, it's click. It's basically saying it's the direction of the vector
+32:24
+Tim Lee: so anyway, so cosine similarity is what people use. And I'll introduce 3 other words to you. There's 1 called. I'll type this in the chat. You may see in the wild. FAIS. S. That's Facebook. AI similarity score. So cosine can be expensive and slow to calculate, because remember what we had to do in that database. We had to take
+32:47
+Tim Lee: that query, and we had to do a full database scan. Tim Lee: So we had to go. Throughout the database
+32:56
+Tim Lee: and and kind of Tim Lee: generate that similarity score, so fa face does it quickly with some compromises in in kind of in fidelity, but very fast.
+33:11
+Tim Lee: And also this is provided by pine cone and weviate. Tim Lee: So if you've heard of those vector databases, they also give you the value of being able to do the similarity.
+33:25
+Tim Lee: Comparisons very quickly, and they persist the vectors for you. Tim Lee: So
+33:32
+Tim Lee: let me talk a little bit about Tim Lee: like how this embedding was created.
+33:37
+Tim Lee: So Tim Lee: this embedding is a neural network, like like one that we discussed at the top of the class.
+33:44
+Tim Lee: And so remember that neural networks, and and how training for neural networks work. So
+33:50
+Tim Lee: people in AI and Ml. Tim Lee: we don't know. Tim Lee: We don't know why
+33:57
+Tim Lee: those numbers inside of Tim Lee: the the neural networks are what they are. All we do know is that if we keep on feeding it examples, and then
+34:08
+Tim Lee: once every time you feed an example. Tim Lee: you Tim Lee: you tune each individual parameter. A parameter is a number inside the the neural network. You tune it so that it reduces the loss.
+34:25
+Tim Lee: In other words, you tune it such that, hey? Tim Lee: I think this should have been.
+34:31
+Tim Lee: you know, heads. And so but you said tails. Okay, so change each number a little bit by the learning rate.
+34:42
+Tim Lee: Remember, we talked about learning rate, and in week, one so until it's until you do what I want. So the magic of neural networks is the thing that we do understand is if we keep on tweaking the internal numbers. For some reason it gets really good at
+34:58
+Tim Lee: generating this this thing. And so what you do with embeddings is.
+35:04
+Tim Lee: you feed it? Tim Lee: a data set.
+35:12
+Tim Lee: And if you look at? Tim Lee: This data.
+35:17
+Tim Lee: So Tim Lee: this is, this is an embedding data set. I mean.
+35:23
+Tim Lee: it's a lot of work to create these. Tim Lee: So it has like an anchor value. Why, in India do we not have one on one political debate, as in the U.S.A.
+35:32
+Tim Lee: That's a that's an anchor statement, neutral statement, and then you'll you'll have one positively correlating example. Why can't we have a public debate between politicians in India like the one in us? So you can see that the 1st 2 sentences are similar, and then you give a lot of negative examples.
+35:51
+Tim Lee: So you can see that there's still like, look at. Look at what it's doing topically. It's it's still talking about India. It's still talking about civics and politics, but it's not quite semantically the same. And so it's kind of like slapping the model on the wrist
+36:05
+Tim Lee: to train it. Tim Lee: you know, to reward semantic similarity. And then look, there's a hundred 2,000 of these
+36:14
+Tim Lee: so use models like this to create these embedding models that are that have learned to be good at generating.
+36:22
+Tim Lee: We don't know how. They always say that neural networks are not very explainable. Tim Lee: But these numbers now end up being like similar to each other when they're semantically tied.
+36:34
+Tim Lee: The interesting thing about this Tim Lee: one another. One interesting thing about this is that
+36:40
+Tim Lee: the embedding people, the model that most people use is Ada, hosted by Openai. I think, in part just because it's fast, cheap, and convenient.
+36:50
+Tim Lee: because if you look at there there are. There are Tim Lee: a ton of embedding models.
+36:57
+Tim Lee: and this is a embedding model leaderboard. Ada isn't even like very Ada is like
+37:04
+Tim Lee: ranked, I don't know. Like 300 or something.
+37:09
+Tim Lee: okay, actually, 70. So this this is ranked 70 for the one that's used by Openai. So in other words, there's a ton of embedding models that are closer
+37:20
+Tim Lee: and Tim Lee: but just goes to show right like. So I think the important thing for you to do is like, just test it.
+37:27
+Tim Lee: And if the semantic matches seem good to you, then use whatever one you want. If for privacy reasons, you don't want to use Openai, then you can easily host your own embedding model
+37:37
+Tim Lee: or use another provider and and get that vector you know from from that.
+37:44
+Tim Lee: The cool thing about embedding models is. Tim Lee: if you feed in in an image of a dog.
+37:51
+Tim Lee: And if I have a text of. Tim Lee: There is a dog there, they that also has a high similarity score not wild, an image, and a sentence, and a description of what's in the image
+38:05
+Tim Lee: we'll have. So I don't know if you saw. But Google photos released a thing where you kind of like search for images.
+38:10
+Tim Lee: You can also implement that Tim Lee: that's done by through through this embeddings setup.
+38:18
+Tim Lee: okay, so that is. Tim Lee: that was a lot.
+38:25
+Tim Lee: But Tim Lee: would you say that you have the 1st pass of understanding
+38:31
+Tim Lee: what this line is doing. This line just to recap is it's iterating through all of my documents.
+38:39
+Tim Lee: It's breaking them into smaller text chunks. Then it's changing it into an embedding, which is the same as a vector, which is the same as an array of floating point numbers.
+38:51
+Tim Lee: How am I? How am I? How am I doing here? Is this it? Tim Lee: Are we notching up?
+38:56
+Tim Lee: Give me a give me a yes, in the chat. If if you're still awake, I know I'm almost boring myself.
+39:08
+Tim Lee: Okay. Tim Lee: So now let's let's unpack. What's in here.
+39:17
+Tim Lee: Just what's the type of index?
+39:24
+Tim Lee: That that's a good question, Willie, like I. Tim Lee: I have kind of a naive understanding of it. I don't know if they do. Another layer of indexing other than like simply turning them into an embedding, and then like sticking them into a memory store like
+39:41
+Tim Lee: my understanding is, there's not an index in the same way that you might have an index for a database, because I think that when you do a similarity match you scan against each element. But I could be wrong. There could be ways of kind of like grouping, and I kind of don't think so, though I kind of think it has to do a full table scan every time it does the match. Can you find out? Would you mind asking
+40:03
+Tim Lee: to? LGBT, and Tim Lee: they're waste off? Mrs. Ronnie says, okay, so sounds like Ronnie knows that you maybe do not have to do a full table scan in order to like. Maybe there's some sensible way of like
+40:17
+Tim Lee: winnowing it down to Tim Lee: something less than that.
+40:23
+Tim Lee: but that's an that's an optimization. Right? So okay, let's let's unpack this now. It is very easy for you to write the 5 lines of code that is underneath this. So let's figure out what's let's figure out what's happening here.
+40:37
+Tim Lee: The way that I want to figure out what's happening here is I am going to
+40:45
+Tim Lee: now do step number 5, milestone 5, adding, tracing.
+40:51
+Tim Lee: so Tim Lee: tracing is tracing is interesting space. Last week we used Lake Smith.
+40:59
+Tim Lee: I wonder, I wonder how long Langsmith is going to last as a company. Tim Lee: To be honest? They raised, I think, like 8 million dollars. But one challenge is like, it's a really commodity space. There are a lot of like tracing and evaluation frameworks out there, and I. I just saw 2 of them shut down their Yc companies and they were they milk. They be built beautiful products, too.
+41:22
+Tim Lee: But I talked to the founder, and Tim Lee: she was like, it's kind of a brutal space. It's a little bit hard to make money in the evaluation space, so I kind of been favoring these like open source projects.
+41:35
+Tim Lee: So arise. Phoenix, Langfuse and Deep eval are all open source.
+41:41
+Tim Lee: Link fuse is pretty similar to Langsmith. Tim Lee: Dp, Val, I like because it's very frameworkless. So I I tend not to like some of these like heavy frameworks that people are building because I think that it's
+41:56
+Tim Lee: masking some of because I think at this stage it tends to be like a little bit of a leaky abstractions.
+42:02
+Tim Lee: And so Tim Lee: it's more helpful to understand what's going on under the hood. Tim Lee: Okay, that said, if you'd like to follow along, or if you stop following along at this point. That's fine, too. But
+42:12
+Tim Lee: trust me when I say that these 3 steps take Tim Lee: 60 seconds. Tim Lee: So it's very easy to set up, and all of these tracing evaluation things are basically the same. You create an account which is obviously super easy.
+42:25
+Tim Lee: You get your Api keys from the provider. So just go to the length using settings option. And then you follow these instructions, which again is simply to
+42:38
+Tim Lee: copy these 3 into your dot end. Tim Lee: Oh, make sure you don't have this comment, it'll break it.
+42:47
+Tim Lee: and then and then copy this somewhere. This is what will hook into the
+42:54
+Tim Lee: thing to Tim Lee: to give it the observability. Tim Lee: Okay, so
+43:01
+Tim Lee: let's let's go back to my initial Pdf
+43:07
+Tim Lee: rag. So I added it to environment variables. I copied these 5 lines in here.
+43:15
+Tim Lee: and then let me run this one more time. It says, what years did the strategic plan cover?
+43:24
+Tim Lee: So I'm gonna hit play just to kind of bring it back up to the top of the
+43:30
+Tim Lee: thing. So what I'm interested in is, I'm interested in understanding and unpacking like, what's in here?
+43:35
+Tim Lee: Okay, so it's finished running. Tim Lee: It has the year. So let's now let's look at a length use.
+43:53
+Tim Lee: Okay, so let's look at the Timestamps. So 5 59. So these 2 things were run.
+44:00
+Tim Lee: So let's take a look at this. Tim Lee: so I'll start backwards. I'll start with
+44:07
+Tim Lee: query. So it's this is just like any kind of like Tim Lee: logger
+44:12
+Tim Lee: system. So Tim Lee: what I mean by that is. Tim Lee: this query maps to this query right here. So it's a function? Query, okay, so let's let's look in here. What do you? What do you? What'd you do? Query.
+44:25
+Tim Lee: okay, so this query. Tim Lee: this is where the parent function started, and then it went and it did these 2 local things.
+44:38
+Tim Lee: So span is just a a block of local code.
+44:44
+Tim Lee: And then it went, and it hit the Internet. And it did a generation.
+44:50
+Tim Lee: So in this generation. Tim Lee: this is where it took my query.
+44:57
+Tim Lee: and it turned it into Tim Lee: a embedding, which is the same as array of floats, which is the same as a. Vector so it it took my sentence, you know, what are the years?
+45:14
+Tim Lee: What years did the strategic plan cover? And it? It sent it to the Internet. It called Open AI Api, and it converted it, and it returned it to me as a vector, as a vector.
+45:29
+Tim Lee: then it did these 2 local things. Tim Lee: So in these things
+45:38
+Tim Lee: it went. Tim Lee: And
+45:44
+Tim Lee: it's creating this like template. Tim Lee: So Tim Lee: read, read this segment right here.
+45:52
+Tim Lee: You're an expert. Qa. Tim Lee: here's some guidance. Tim Lee: I'm going to give you some context.
+45:58
+Tim Lee: And then I'm going to give you a question. Tim Lee: Okay? And then it. It also has here, which is the 1st
+46:10
+Tim Lee: the highest ranked Tim Lee: documents Tim Lee: in the, in the language of if embeddings they call documents chunks of text. So even though it's not literally the full document, it's that block of text.
+46:25
+Tim Lee: And then let's look at what the what request got formed.
+46:31
+Tim Lee: So it sent this to Openai.
+46:37
+Tim Lee: Someone was asking earlier what which Gpt they used. They use Gpt. 3.5 dash turbo by default.
+46:46
+Tim Lee: If you don't want that one. Tim Lee: then you all you do is you kind of you, you configure it to use the Llm. That you want.
+46:55
+Tim Lee: and then look at it created the system prompt. Tim Lee: It added the context information. The
+47:02
+Tim Lee: the formatting is wacky but it it gave like kind of like 2 chunks, and
+47:10
+Tim Lee: if you read it like Tim Lee: corporate college customers. Given that blah blah continue through 2025.
+47:19
+Tim Lee: If you read this Tim Lee: I mean, it does give you the range technically, doesn't it? Right? It's it's it's actually pretty good. It's it.
+47:30
+Tim Lee: the semantic matching, I mean. Look, look, this is what I was talking about right it Tim Lee: it somehow right like this.
+47:37
+Tim Lee: Or this sentence, right was enough to kind of elevate the similarity score, to create a pretty decent ranking.
+47:46
+Tim Lee: and then the Llm. Return the sentence. The strategic plan covers the years 2024 to 2028.
+47:57
+Tim Lee: That's pretty interesting, because this is this is this is the end of 2023, 2028. This is the beginning. 2024. So anyway.
+48:08
+Tim Lee: to to kind of like Tim Lee: recap. Tim Lee: If you wanted to implement this manually.
+48:17
+Tim Lee: It's just a few lines of code. Tim Lee: It is
+48:22
+Tim Lee: changing into an embedding. Tim Lee: asking my vector store. Give me the top matching
+48:29
+Tim Lee: documents. Tim Lee: sending and step 3, sending an Llm. Request that packages up all of those, all of those things.
+48:41
+Tim Lee: What do you think? I I promised you at the beginning that Tim Lee: the we're going to increasingly demystify
+48:48
+Tim Lee: these lines of code as well as
+48:54
+Tim Lee: like. Tim Lee: how document
+48:59
+Tim Lee: answering works.
+49:05
+Tim Lee: how, how, how, how, how, how are we doing Tim Lee: with that goal?
+49:11
+Tim Lee: Still still processing.
+49:20
+Tim Lee: Okay, Priyanka asks, isn't it expensive to pass documents plus embedding to Lm instead of Lm fetching it by itself?
+49:27
+Tim Lee: Isn't it expensive to pass documents Tim Lee: plus the embedding.
+49:32
+Priyanka Shah: So the documents right like every time. If for everybody, if we keep the trees and keep passing the data.
+49:39
+Priyanka Shah: won't that incur like higher cost than just asking the other. Priyanka Shah: Then, like preloading everything in the Lm. And asking it to use it, is there a way to do that?
+49:49
+Tim Lee: There's no way to do that. So Llms, if you look at it just literally with that word, these large language models. They are a text in text out machine
+50:00
+Tim Lee: so they can't fetch things they can't like. You have to feed it and extract it. You know the information
+50:08
+Tim Lee: alright. So I'll be asked. So we are passing into the Lm. Only the vectors. And, by the way, of course, we're not literally passing in the vectors anymore, we? We change the vectors back into say, okay, give me the original text that was associated with this, but
+50:22
+Tim Lee: that have a higher match instead of all vectors. That's correct, Abi. So we are only passing in the ones that were the highest matched and exceeded like a similarity threshold.
+50:35
+Priyanka Shah: So isn't. Doesn't that kind of bias because Priyanka Shah: we don't pass it? I guess it.
+50:42
+Priyanka Shah: Who controls what gets passed it right because we don't pass negative sound tones or.
+50:48
+Tim Lee: Who controls great question. So it's pretty naive from the perspective of like this vector, store. You know what the the type of interaction it can support is
+51:01
+Tim Lee: you. Give it an embedding. Tim Lee: and it'll give you back Tim Lee: the top K.
+51:07
+Tim Lee: Embeddings that have a Tim Lee: similarity. Tim Lee: A matching similarity ranked by like how similar, how similar it is.
+51:16
+Tim Lee: So it's up to you. Determine right? You can tell it. Give me the top 100, Tim Lee: you know. You can give me the top 10.
+51:24
+Tim Lee: So that's that's in your control. Tim Lee: As to you know what Tim Lee: what passes back.
+51:33
+Tim Lee: One more reason is to deal with the Llm's limited context window. Right? That's true, Harley, although like as we've all seen, the Lm context, windows are
+51:41
+Tim Lee: pretty large. Now, of course, there's token cost Tim Lee: right. And there's like latency.
+51:47
+Tim Lee: But one thing that people will do is Tim Lee: they'll add a step that's not here, which is, they will cause like, imagine a human doing this right? You know, you give a human. It's a bunch of like snippets of text, or like, you have to kind of like, really kind of like, piece it together, so some people will
+52:07
+Tim Lee: do an additional like. So ranking and summarization pass Tim Lee: and try to distill and process the information in order to help the Llm. Get a better answer.
+52:22
+Tim Lee: but hopefully, this is helping you also to understand the limitations. Tim Lee: For example, if you fed in
+52:28
+Tim Lee: Shakespeare. Tim Lee: if you like. Imagine that you fed in you know a Shakespeare play into the system
+52:35
+Tim Lee: and you asked it. Hey. Tim Lee: what are the main plot points Tim Lee: of this Shakespearean?
+52:43
+Tim Lee: Would it be able to answer. Tim Lee: using this technique?
+52:49
+Tim Lee: No, so so rag in the real world. Tim Lee: it really needs to be adapted to your use case. So, for example, if I wanted it to be able to.
+53:01
+Tim Lee: Basically give me English literature, then I either have to on the side, either offline or online go and process
+53:11
+Tim Lee: process the play. Tim Lee: have it, read through it. Tim Lee: create summarizations.
+53:18
+Tim Lee: create analysis. Tim Lee: you know, and create like side documents that partner with it, and then you can do like a similarity on top of that to answer a question.
+53:33
+Tim Lee: Another example of this is, sometimes I I saw one company who was trying to. They just did a naive rag implementation, and they were trying to use it to be like a Qa. For the status of projects.
+53:48
+Tim Lee: So they wanted to make it like a I wanted to be able to ask for, you know. Hey, what are the latest updates for Project XYZ. In their timeframe.
+53:57
+Tim Lee: So Tim Lee: if you just use vanilla, you know, vector you know, store, you know, embeddings Matching, it's going to be really incomplete.
+54:06
+Tim Lee: So instead, what you should do is you process the query, and then you can use that to say, you know, fetch all updates related to the project. So do that as not a vector similarity. Query, but like an Api query or a query that looks at looks at things by tags.
+54:25
+Tim Lee: And you know, build things from that perspective. So that's why like we v, 8 is interesting.
+54:33
+Tim Lee: So if you I typed it into the zoom, we v. 8 is a database that so both pine cone and weeviate support metadata tags and filters. So you could, for example, for each chunk.
+54:45
+Tim Lee: If I'm gonna make this be a project, knowledge, project, management, knowledge. Bot you go. And for each chunk tag the the related project ids
+55:01
+Tim Lee: And and then you could like filter that, and then and then and then do other kind of like assemblies.
+55:09
+Tim Lee: Okay, so let's let's let's let's move on.
+55:16
+Nikrad: Can I ask a very quick question? Yeah. Nikrad: just in terms of my mental model of all of the
+55:23
+Nikrad: evaluation automation that we've talked about up to now like whether it's for rag or for the traditional Llm. Question answering.
+55:32
+Nikrad: I think, in my head I was imagining this makes human out of the loop. But I think and correct me if I'm wrong. What I'm realizing is
+55:40
+Nikrad: a lot of the traceability in the evaluation or Llm. As a judge. Nikrad: they give us a faster and more efficient way of being able to look at where the Llm. Is failing. But when it comes to updating the prompt or
+55:55
+Nikrad: adjusting the rag pipeline that's ultimately on the human. To do right like this is not going to give an automated output that we can immediately
+56:06
+Nikrad: that that the Lm. Or some engineering software code can integrate directly back into improving itself right.
+56:13
+Tim Lee: Yes, that's right. So Tim Lee: I think that Tim Lee: people underestimate how much
+56:22
+Tim Lee: both data inspection as well as like data, curation and data improvement that your role is versus to to improve a system like this. So we're gonna cover this in about 15 min, when cause like on in milestone
+56:37
+Tim Lee: you know, one of these milestones here? We're going to talk about how to add evaluation to this rag system.
+56:46
+Tim Lee: And Tim Lee: but yeah, basically, how to approach that Tim Lee: approach? That question.
+56:52
+Nikrad: Okay, great, thank you. Just wanted to kind of make sure my my assumption Nikrad: before I started. The class is kind of real. I'm realizing I was wrong, and that it is much more human involved than I thought.
+57:06
+Tim Lee: Satya, you had a question. Santiago: Yes, Tim, I really asked on on top of like Priyanka, what? Priyanka asked. You said that Lms are like input, text
+57:16
+Santiago: text in text out like, if you were to. Santiago: you know, load a file in the chat and it would be able to like it wouldn't have to do the embedding it would be able to process it and give you an answer is so like embedding becomes really useful when the
+57:29
+Santiago: when it has to do rag on like really large, like, like, really large amount of text.
+57:37
+Tim Lee: That's correct, like. So, for example, you know, when you upload a file into Chat Gbt, and try to like talk to it if it's if the file is underneath a certain size, then it actually just it doesn't do embeddings just pastes the whole file into the context.
+57:52
+Tim Lee: But if the file is over a certain size, then it does the the processing that we're talking about.
+57:58
+Tim Lee: However, we can easily make it better. Tim Lee: because the thing is is that like when you you know.
+58:06
+Tim Lee: ask the document a question, or whatever, and it just does the semantic matching. I find it a little bit limiting in certain use cases, because.
+58:16
+Tim Lee: like, it's only going narrowly to this 1 1. 1 place, I think. What?
+58:23
+Tim Lee: Because it's the whole thing is like. Imagine this as a I'm just gonna pitch an alternative implementation, which is, if I were doing this for certain documents, someone uploaded a 55 page document.
+58:34
+Tim Lee: What I would do is I would do a summarization, or even a series of summarization passes around it and generate of cliff notes of that document.
+58:45
+Tim Lee: I think one thing that I believe is that text and documents are really compressible. They're extremely compressible.
+58:54
+Tim Lee: I'll give you 2 examples of compression which are. Tim Lee: and I don't know where you went to school in high school, but you know, for any of us who went to high school in the Us. You had to read a lot of books that maybe you didn't want to read.
+59:08
+Tim Lee: You had to read, you know, War and Peace, or you know the Iliad or something, and not all of us read those books. Some of us read the cliff notes or the barons notes instead, or spark notes. I don't know what age you are, you know. So whatever generation you are, you read, read those things. Would you agree with me
+59:27
+Tim Lee: that when you read those cliff notes Tim Lee: you were able to largely pass those tests
+59:32
+Tim Lee: right. It had all the key quotes Tim Lee: at all the themes at all. The major plot points.
+59:39
+Tim Lee: In fact, you would be hard pressed. Unfortunately for the English teacher, you would be hard pressed to prove that I didn't know that whole book
+59:49
+Tim Lee: right, even though I have only had to read cliff notes that were this thin Tim Lee: compared to a book that's like this, thick
+59:56
+Tim Lee: right? Tim Lee: And I bet you can go even further. Right? You could even take a cliff note, and I bet you could just like
+1:00:04
+Tim Lee: Super Tldr. Tim Lee: Yeah. Tim Lee: Now, wouldn't it be interesting if, like, think about all the work documents that you have written. I bet I could create
+1:00:15
+Tim Lee: a very quick like cheat sheet of that document that would make it indistinguishable from you, having read that whole document
+1:00:22
+Tim Lee: right? And so imagine a world where you take that document. You generate that cliff notes, and then you put it in the context, and you do the embeddings.
+1:00:32
+Tim Lee: or you have the cliff notes and you tag it with the kind of like the relevant source chunks.
+1:00:38
+Tim Lee: So not only is it kind of like cliff noted, but like it's it has reference anchors in it that has, you know where and it came from the the chunk. So then, if you upload a document.
+1:00:51
+Tim Lee: then you can have this like super compressed cliff notes, that's fully in the context.
+1:00:57
+Tim Lee: because the reason that context is useful. Is that like. Tim Lee: if I know the bigger picture right? If if I'm just giving you that 2 paragraph snippet, you don't really know the big. You don't understand the big picture.
+1:01:09
+Tim Lee: right? You just can kind of like, you know. Just see that Tim Lee: you know that that that piece of text
+1:01:16
+Tim Lee: And so I'm gonna answer Mark Michael's question, because it's it's really tied to Nicod's point as well. And and I was chatting with you know, Ronnie at the beginning of of class about this which this is actually a really important point, which is.
+1:01:33
+Tim Lee: I had a question in the homework last week that I think a lot. It confused a lot of people which was, choose 2 key metrics for the prompt.
+1:01:42
+Tim Lee: and I want to unpack and discuss that a little bit more Tim Lee: so. Michael says. Recent studies show that Llms are bad at summarizing documents.
+1:01:51
+Tim Lee: Kind of kind of they're bad if you give it like a really naive prompt, and you only do one pass.
+1:02:00
+Tim Lee: So Tim Lee: many people chose to do the summarization task. Tim Lee: And in in the project this past week.
+1:02:08
+Tim Lee: And Tim Lee: I think one thing that we've learned from Lms. Would you agree with this, that, like.
+1:02:14
+Tim Lee: if you tell it to generate content, generally generate an essay, generate a recipe, generate a summarization. It does a passable job.
+1:02:23
+Tim Lee: I would say. Passable would be the typical score Tim Lee: like it would. It reminds me of something like maybe a 10th grader or a 9th grader would like generate.
+1:02:32
+Tim Lee: you know. So it's okay. Tim Lee: right? Tim Lee: But that's not where the Max is right. That's just kind of like what comes out by default.
+1:02:42
+Tim Lee: And so people may ask. Tim Lee: Well, how do I make it better? Then I was having a conversation with Ronnie earlier in this session about like, well, how do you? How do you make it better?
+1:02:52
+Tim Lee: So? The question I'll ask you is, why is it bad? Tim Lee: Why do you like? What is the real difference between a good summary
+1:03:01
+Tim Lee: and a bad summary? Tim Lee: So, as Willie mentioned, this is why we still get paid big bucks as the biological brains.
+1:03:08
+Tim Lee: Right? So Tim Lee: W. I'm asking like semi, rhetorically, if you have an answer, what makes a summary good versus bad
+1:03:17
+Tim Lee: right? Tim Lee: And so what your job as a human is is almost like you're coaching a a kid
+1:03:26
+Tim Lee: which is like, actually, this summary isn't good because.
+1:03:32
+Tim Lee: you know Tim Lee: let's I mean, the easiest reason is not is not good is because maybe it has. It has inaccuracies, inaccuracies in it.
+1:03:42
+Tim Lee: But another thing that I would say about summaries is like, I don't like the way it's organized here. Tim Lee: So you're you're the way you're you're kind of like structuring. I I kind of want it to be in this format. I think it should be I want the 1st section to be the major plot points. I want there to be a section that that does an analysis of themes. I want to be another section which is like, Give me a dossier dossier of characters, and I want another theme that has Pull quotes so quotes that seem to be like the most relevant right. I'm just inventing right. But maybe that's a better summary.
+1:04:17
+Tim Lee: So, in other words, you have to use your discretion to understand, like what is a good summary versus a bad summary.
+1:04:23
+Tim Lee: and what I was suggesting that you do is you have to answer that question yourself, which is a hard question.
+1:04:29
+Tim Lee: and then represent it as a metric. Tim Lee: Right? Like, yeah, this summary is bad, because it's so. You're so verbose. Have you noticed that chat? Jbt, the language is like so flowery, right? So flowery and long like, can you be a little more compact in your expression?
+1:04:46
+Tim Lee: Right? So like, now, I'm starting to realize I don't like this summary, because it just goes on and on and on. Tim Lee: right. And so then
+1:04:54
+Tim Lee: you define a success match metric of maybe conciseness.
+1:05:00
+Tim Lee: right? Or anyway, your job at the end of the day is like. Tim Lee: get it to the point, and you can. If you work it enough, you can get to the point where it's like, Okay, now, this is a good summary.
+1:05:11
+Tim Lee: Now you've you've you've you've done a vital step, because now you capture that good summary and you feed it back into the prompt as an example.
+1:05:22
+Tim Lee: Or you gather n number of them, and you feed it into a fine-tuning set.
+1:05:28
+Tim Lee: But Tim Lee: Llms are garbage in and garbage out. If you don't do that hard, iterative work
+1:05:34
+Tim Lee: of upgrading it from a bad summary to a good summary which requires human discretion. Tim Lee: then it will never, it will never get better.
+1:05:41
+Tim Lee: So this iterative process is how you then can have it output like higher quality stuff.
+1:05:50
+Tim Lee: so anyway, that's that's kind of my my rant, but like it's, it's, you know there is no magic wand solution to this. It takes. It takes our that other half of our brain that understands these types of things to, you know. Guide it, you know. Properly.
+1:06:10
+Tim Lee: So Tim Lee: I'll skim over this. I won't. Let's let's see how how much?
+1:06:16
+Tim Lee: We'll go to this this one I just want to illustrate, you know. Do this if you like.
+1:06:23
+Tim Lee: you know. I I say this because I know that some people may have like privacy concerns with
+1:06:29
+Tim Lee: Gmail, but I think it is pretty cool to be able to have your own personal, semantic, Lee smart assistant for your email.
+1:06:38
+Tim Lee: So if you follow these steps. Tim Lee: you can link it for your work email or your personal email.
+1:06:45
+Tim Lee: if you have privacy concerns. I mean, of course, you know Openai is promising that that it's
+1:06:51
+Tim Lee: guarding the things that it's sending to you. But if you don't trust it. Remember, you can host Embeddings yourself. You can run embeddings locally on your local computer.
+1:07:00
+Tim Lee: right? So in that case you won't be sending anything anywhere Tim Lee: but this 1st milestone grants you a token which you can then use to fetch your email.
+1:07:13
+Tim Lee: and then this milestone here. It will go and fetch
+1:07:21
+Tim Lee: fetch the emails and put it into a
+1:07:27
+Tim Lee: a llama index document. Tim Lee: So at this point, you know, nothing has happened except for it's in the document. And then here it's the same snippet of code that once it's in document form.
+1:07:42
+Tim Lee: then it can go into the vector database. It can go into the Retriever, and then you can. You can ask it and remember the
+1:07:49
+Tim Lee: that. In fact, I've started to not use these because I like to. I like to just to do it myself, because I like the full control, because I like to. This has the naive solution. But I like to. You know, expand it myself.
+1:08:03
+Tim Lee: In fact, one of the engineers at Netflix that does. AI. I've had the same experience which is like
+1:08:10
+Tim Lee: libraries like Lama Index and lang chain Tim Lee: and other frameworks. They are really interesting because you can look under the hood of what they're doing. So they're amazing kind of like references. But a lot of people have actually moved away. They started using the frameworks.
+1:08:28
+Tim Lee: and then they ended up just Tim Lee: diying it. And I feel that like the amount of coding. It's it's better to Diy because you have
+1:08:37
+Tim Lee: the full intuition for what's happening. And you have. You have a lot more freedom to kind of like play with like adding different, adding more loops, having adding more review loops. You know, doing additional kind of like
+1:08:50
+Tim Lee: of things Tim Lee: that make it more human. Tim Lee: because when humans are doing things, they're not. I'm not doing one pass. I'm typically, of course, doing like many iterative passes in order to to answer a question.
+1:09:04
+Tim Lee: And so if you have that Tim Lee: full control, then you can program those loops into the the Lln directly.
+1:09:11
+Tim Lee: Okay, so let me let me give you this as a quick demo. Tim Lee: Okay, I haven't read this yet. Jury. Something's going on jury jury wise.
+1:09:20
+Tim Lee: Okay? So I have jury duty. Tim Lee: apparently. Sucks. Tim Lee: hey?
+1:09:26
+Tim Lee: So I've got my email reader somewhere.
+1:09:31
+Tim Lee: Alright. So let's let's go and fetch the email. Tim Lee: So this is going to go and fetch the last 50 emails and index it. Let's see how long it takes.
+1:09:39
+Tim Lee: Think it should be under 20 seconds. Tim Lee: 8 seconds. Okay.
+1:09:44
+Tim Lee: so 8 seconds to go and fetch 50 emails. Tim Lee: Let me ask a question.
+1:09:52
+Tim Lee: Move on. I'm sorry.
+1:10:01
+Tim Lee: Great.
+1:10:27
+Tim Lee: so Tim Lee: pretty cool. Tim Lee: The takeaway that I hope you receive from this
+1:10:35
+Tim Lee: is not just about like emails and documents. But
+1:10:41
+Tim Lee: through this same pattern, of course you can. Ingest from Google Docs
+1:10:46
+Tim Lee: like our company uses. I have about a trillion Google Docs Tim Lee: notion
+1:10:52
+Tim Lee: you could also come in from Jira, you know. So there's a lot of power available for like
+1:11:01
+Tim Lee: feeding in a lot of a lot of data that's available to you.
+1:11:08
+Tim Lee: rethink Tim Lee: any other anything else. Okay. Last point about this
+1:11:15
+Tim Lee: to Tim Lee: process and index the last Tim Lee: 100,000 of my emails
+1:11:23
+Tim Lee: would cost about Tim Lee: $10. Tim Lee: So pretty good.
+1:11:29
+Tim Lee: Right? I mean, last 100,000, I get a lot of emails. But that will take me like decently far into history.
+1:11:36
+Tim Lee: And yeah, great question about which model that was. But I was using the Ada model for indexing.
+1:11:43
+Tim Lee: So it's the it's the is the popular one for Tim Lee: through Openai.
+1:11:51
+Tim Lee: right? So 10 bucks, although you could use one of the other embedding models, and I I bet it would still be like fairly similar in cost.
+1:12:00
+Tim Lee: Right? So that order of magnitude that really tells you that. Why enterprise companies like there's a reason that Google and other providers, they haven't come out with semantic search yet. It's not. They don't know how to do it. Of course they know how to do it, but like they can't pay $10 per user.
+1:12:18
+Tim Lee: right? They don't make enough money per user. So one of my friends who runs
+1:12:23
+Tim Lee: Experimental AI at Yahoo. Tim Lee: Cost for them becomes a huge concern.
+1:12:28
+Tim Lee: Because for us. Tim Lee: you know, we can do lots of fun products and really caught like, you know, you won't spend more than a hundred or $200 in this class, and that's just you like just doing a lot of like debugging cycles.
+1:12:41
+Tim Lee: But for them Tim Lee: at at that that scale it's going to cost millions of dollars.
+1:12:48
+Tim Lee: And in order to deliver, like certain certain solutions. Tim Lee: which is why, directionally, 1 1 thing that people are doing at the those bigger scale companies, you're really starting to investigate edge devices. So running models on phones on customer laptops, on customer devices, and and and and having their devices do some of the heavy, heavy lifting.
+1:13:15
+Tim Lee: Santia, you can host locally, for sure for personal use, although, like I said.
+1:13:22
+Tim Lee: I mean the cost. I don't know. I guess it depends on what you think is like low cost, right? But it's like it's, you know, this. This only costs, like, you know, dollars for many, for many situations.
+1:13:32
+Tim Lee: does the embedding cover Gmail attachments, pictures? Pdfs, so that's not really a question for embeddings. That's a really a question, for, like what is in this
+1:13:43
+Tim Lee: this custom, Gmail, reader, and if you look at the code for the custom. Gmail, reader! I actually I stole this from Lama Index. But then it was. It was so naive. I actually had to.
+1:13:54
+Tim Lee: I actually had to fix it up a little bit before it before it worked, and I can tell you that it is not. It's not looking at the you would have to like. You can do that. But you would have to. You'd have to implement it yourself or find someone who online, who's already implemented it where you for each, you know thing you you go, and you know, process the attachment. So you can. But it. It does not do it right now you'd have to augment this file or or do something differently.
+1:14:24
+Tim Lee: Okay. Tim Lee: time to move on to my, the last topic, which is evaluations.
+1:14:36
+Tim Lee: So Tim Lee: any questions, any other questions before we take this final turn
+1:14:48
+Tim Lee: alright. So Tim Lee: here's the home stretch. Tim Lee: We have this rag solution.
+1:14:54
+Tim Lee: You call a rag pipeline, if you want. Tim Lee: and Tim Lee: how well
+1:15:00
+Tim Lee: does it work? Tim Lee: We already did step one of an AI engineer, which was, we did the vibe check.
+1:15:05
+Tim Lee: So otherwise we just did some random spot checking, and you can even press. It's interesting to press it to see when it falls down to so like. Poke it hard enough
+1:15:14
+Tim Lee: to. You know. I I'm pretty sure you could. You could. Tim Lee: All you have to do is think of a question that, like spans context, or requires distillation across
+1:15:24
+Tim Lee: across sections, and then you would hopefully you would see it start to, not hopefully, but like it's, it's interesting to see if it like. If you successfully start to make it flounder right?
+1:15:34
+Tim Lee: But I would suspect that any like targeted question, based off of a single like Chunk, you know it might do it might do. Okay?
+1:15:41
+Tim Lee: So you've done the vibe check. But Tim Lee: you want to do a broader evaluation. You want to do a broader scan, especially if you want to start to experiment with these these techniques that I'm talking about right?
+1:15:57
+Tim Lee: To improve the rag cause. Tim Lee: you know, you know what's the more holistic evaluation. So the the game that I want to show you is, you know, of course, when people are creating these massive data sets, they're not. No one typed this 100,000 manually.
+1:16:15
+Tim Lee: Instead, you have to use a series of many different prompts.
+1:16:21
+Tim Lee: To and and and many, many cycles as well.
+1:16:26
+Tim Lee: And then review of the a review of the quality, the value of the generated things, and then and then more more curation. So what I want to give you a gist of is this of that process.
+1:16:39
+Tim Lee: So Tim Lee: let's let's let's check out
+1:16:46
+Tim Lee: this designing evaluations piece. Tim Lee: So
+1:16:53
+Tim Lee: this Tim Lee: snippet I want you to get really used to seeing
+1:16:58
+Tim Lee: right cause. So much of Llm. Coding is just
+1:17:04
+Tim Lee: designing a prompt Tim Lee: sending it in Via an Api. Whether it's locally hosted or remote. It's so. It's still going to use this Api
+1:17:12
+Tim Lee: and then parsing their response. So Tim Lee: this is a pretty typical thing which you could probably move into a library, which is, we know, that models
+1:17:22
+Tim Lee: come back with really inconsistent formatting. So you typically have to like clean it up a little bit in order to make sure that you can process it.
+1:17:30
+Tim Lee: But the the prompt that it was is, you are an expert, educational content Creator, tasked with generating factual questions and answers based on the
+1:17:39
+Tim Lee: document expert. So what a excerpt. So what I did was. Tim Lee: I just took the entire document right like iterated through each chunk.
+1:17:48
+Tim Lee: and then I fed it chunk by chunk Tim Lee: into this prompt, and I asked it to generate questions
+1:17:57
+Tim Lee: and and matching answers. Tim Lee: Then, later, when I run, rag on it.
+1:18:03
+Tim Lee: I will compare Tim Lee: the the questions and answers. Tim Lee: So this is kind of like phase one.
+1:18:10
+Tim Lee: Now. Tim Lee: this thing Tim Lee: I came up with in 5 min with chat Gpt.
+1:18:20
+Tim Lee: so Tim Lee: the prompts that you find in lang chain and langsmith, and just around the Internet. Take it, take it with a grain of salt right? Many prompts will work equivalently
+1:18:35
+Tim Lee: right as long as you're clear. Tim Lee: Then, you know, there's gonna be very similar performance now. Later on, in a few weeks I'll talk to you about prompt optimization to really squeeze.
+1:18:48
+Tim Lee: You know things out of it. But in terms of like the 1st 80%. A lot of it is just, you know, come up with something that makes sense to you
+1:18:56
+Tim Lee: as clearly described as you can. Tim Lee: I experimented with.
+1:19:02
+Tim Lee: you know. Tim Lee: a variety of different things here. Now
+1:19:09
+Tim Lee: this was kind of step one. Tim Lee: So Tim Lee: this output
+1:19:14
+Tim Lee: gives me Tim Lee: things that look like like this.
+1:19:21
+Tim Lee: So what is the timeframe of the strategic plan mentioned in the document? Tim Lee: 2024, 28. How many main pillars are outlined in the strategic plan? 3. What is the focus of pillar one in the strategic plan. Blah blah blah.
+1:19:34
+Tim Lee: Right Tim Lee: now. Tim Lee: just because it generated
+1:19:40
+Tim Lee: 85 questions Tim Lee: you really have to ask yourself Tim Lee: are these good questions and good answers?
+1:19:48
+Tim Lee: So you have to put on a separate like scrutiny. Tim Lee: 1st of all.
+1:19:54
+Tim Lee: what is a good question? Tim Lee: I have my idea, for what is a good question. Do you think the I'm asking you first? st Don't even worry about the answer, for now
+1:20:03
+Tim Lee: look at these questions. Tim Lee: in your opinion? Tim Lee: Are these questions?
+1:20:08
+Tim Lee: Good questions. Tim Lee: great questions. Tim Lee: mediocre questions.
+1:20:14
+Tim Lee: bad questions. Tim Lee: Tell me what you think.
+1:20:20
+Tim Lee: I know it's good. I'm gonna take a minute to process this because I think you have to wrap your mind around around that prompt. So they are factual
+1:20:33
+Tim Lee: and maybe even open up the Pdf. Tim Lee: And ask a Tim Lee: a better question. So Willie thinks that they're very specific
+1:20:43
+Tim Lee: lot of edge cases. Tim Lee: No inference type questions.
+1:20:53
+Tim Lee: None of them involve reasoning inference.
+1:21:07
+Tim Lee: You know one thing, another metric that I have Tim Lee: or
+1:21:13
+Tim Lee: this these questions, which is like.
+1:21:19
+Tim Lee: well, he says they're not single fact. So this is really great right? Because I and I don't. I don't think we're quite there yet. Right? But I think you're you're.
+1:21:28
+Tim Lee: This is the hard work, right of of how to improve quality because you really have to, because I think correct me if I'm wrong.
+1:21:34
+Tim Lee: is it fair to say Tim Lee: you're evaluating these questions? And you're thinking they're okay.
+1:21:40
+Tim Lee: is that not your head? If you're on camera or like, you know, say, is that is that your evaluation? That the these questions are like.
+1:21:49
+Tim Lee: okay, maybe passable. Tim Lee: Your instinct is telling you that they're not
+1:21:55
+Tim Lee: fantastic. Tim Lee: you don't give you a metric which is like.
+1:22:01
+Tim Lee: I don't feel Tim Lee: that I would ask
+1:22:06
+Tim Lee: some of these questions. I think some of them are, I think some of them are. Tim Lee: How does the strategic plan address the challenge of financial sustainability?
+1:22:14
+Tim Lee: I'm gonna I'm gonna say, that's a good question.
+1:22:19
+Tim Lee: How many main pillars are outlined in the strategic plan? Let's say that's a bad question. Tim Lee: One of my metrics is.
+1:22:27
+Tim Lee: are these questions Tim Lee: that a human would have
+1:22:32
+Tim Lee: you know, for this document Tim Lee: only someone who works at Code path would know if these are great questions and true. But I you know, I think, that if you were also just to flip open the document or so, maybe in maybe in the void, Michael, that that's true. Although although I would say that you know.
+1:22:54
+Tim Lee: one metric here Tim Lee: is Tim Lee: basically, if you were to read that document and then like, understand it, you know.
+1:23:03
+Tim Lee: I don't think you need to be at code path to understand whether these are good questions or not and not good questions. So
+1:23:10
+Tim Lee: so basically, you have to continue this exercise Tim Lee: and then kind of like
+1:23:18
+Tim Lee: highlight, the ones that are good questions, bad questions come up with more descriptions. I think you guys are heading in the right direction.
+1:23:28
+Tim Lee: They're not involved reasoning, none of none of them involve reasoning or inference. Okay.
+1:23:34
+Tim Lee: that's interesting. But then, you know, you know, give a give examples. Maybe you know of that so
+1:23:42
+Tim Lee: hard to see the purpose of the questions. Tim Lee: and I think I think, Willie, is
+1:23:47
+Tim Lee: that that last sentence? Read that quote, read that sentence, Taylor. My evaluation is set to the, to the
+1:23:54
+Tim Lee: type of user. That's gonna ultimately add, use my product. And like real questions that they would ask. Right?
+1:24:00
+Tim Lee: So Tim Lee: even that, that's that's a that's that's the that. Well, that's the gold standard right? You know, if you want to be with what is a good evaluation set, it's 1 that matches your usage.
+1:24:16
+Tim Lee: At the end of the day. A good evaluation set is one that matches your usage Tim Lee: and so you can mimic it a little bit. But then what I would, what you can do right is
+1:24:27
+Tim Lee: take something that matches usage, and then I bet that
+1:24:33
+Tim Lee: what you can do is like you can start to unpack a little bit more. Tim Lee: and and you know, describe that natural usage, and then you could also have. So you can have a secondary pass through this, and you can.
+1:24:48
+Tim Lee: Score these evaluations. Tim Lee: Questions based on the metric of you know, whatever you decide, a good evaluation question is
+1:24:57
+Tim Lee: cause, because at the end of the day. If you're trying to get to now, you don't need a hundred 1,000 good things.
+1:25:04
+Tim Lee: Really, the order of magnitude for a robust evaluation set is somewhere like
+1:25:12
+Tim Lee: between 500 to a thousand. Tim Lee: So your mission is, you know.
+1:25:19
+Tim Lee: like cause. Like, I said, some of these are okay. How do I know they're okay. Because, like, like Michael said, I'm within codepad. So I know, I know that it's a common question, how does how are we addressing the financial sustainability. Yeah, in what way? Yeah, sure, this is a good question, too. You know. In what ways is the plan proposed to improve effectiveness while reducing costs I want I want. I'm very curious to understand that.
+1:25:40
+Tim Lee: So Tim Lee: what you can do is start to winnow through and start to create batches of good questions, batches of like bad questions, and then you feed it back into the prompt.
+1:25:52
+Tim Lee: and then have it. See if it can like start to create more good questions. Tim Lee: So what I didn't do here, like I just did the 1st step. So your 1st step
+1:26:04
+Tim Lee: is just to kind of generate like the initial set of questions. Then you have to do a bunch of cycles of Follow up, ponder what's good or bad about it.
+1:26:16
+Tim Lee: Separate out the good ones, and the bad ones have the Llm. Like
+1:26:22
+Tim Lee: like, analyze and and and create the patterns of what's good and bad, feed the good ones back in as exemplars. And remember, the context are pretty good. You can feed in
+1:26:32
+Tim Lee: 2 dozen Tim Lee: good questions Tim Lee: as part of the prompt. Tim Lee: and say, generate 10 more.
+1:26:40
+Tim Lee: Right? Tim Lee: So Tim Lee: so that's your that's the muscle that you're trying to build when it comes to valuation. And once you've once you have this data set of
+1:26:53
+Tim Lee: a hundred is plenty. If you're just doing it as a test set when we're talking about fine tuning, 500 to 1,000 is amazing. It will give. You will give you huge returns.
+1:27:05
+Tim Lee: and that's how you'll start to like when we get to the fine tuning section. That's
+1:27:11
+Tim Lee: if you have practiced this muscle of generating evaluation data sets of the right size, then those also become your fine-tuning training sets.
+1:27:21
+Marcelo: Tim. So like just to recap a little bit. When you say quick key metrics, we're like.
+1:27:26
+Marcelo: we're not really codifying them as metrics like numbers whatever. But they're manifesting back in the examples that we
+1:27:34
+Marcelo: that we single out as good examples. Tim Lee: I'm. Marcelo: Is, that. Tim Lee: Yes, yes and no like so but but you can also describe them as a as a as a word like, for example, one of the things that people seem to like or dislike is whether this. So let's let's think of a word for because people didn't like these? Very basic questions.
+1:28:00
+Marcelo: Sure. Tim Lee: Right, so like, should should there be a master called sophistication.
+1:28:05
+Marcelo: Okay. Tim Lee: And I want, and then I can create an Llm. Judge Tim Lee: right?
+1:28:11
+Tim Lee: That has a prompt that says, you know what? I don't want these stupid questions like, what is the 3rd word on the second paragraph? Right? I want a I want an analytical question.
+1:28:23
+Tim Lee: or I want a sophisticated question. So what I'd like you to do is like these are ex like. So here's my Llm. Judge. Please evaluate this question for its level of sophistication.
+1:28:33
+Tim Lee: Pretend that you are a Tim Lee: senior executive at the company Tim Lee: or a board member scrutinizing this document, and I want you to have this level of interrogation.
+1:28:44
+Tim Lee: Then give it examples of questions that are that you find sophisticated event, examples of questions that you think are high school.
+1:28:52
+Tim Lee: you know. And then you're going to call that metric sophistication, grade it on a scale of one to 5 with a reason.
+1:29:00
+Marcelo: Okay. But then you're like, actually like engineering, the prompt of the judge around sophistication
+1:29:06
+Marcelo: right to then Marcelo: to then judge your like the actual thing that you're trying to build.
+1:29:12
+Tim Lee: It's it's it's. Marcelo: Location. Tim Lee: It's evaluation all the way down. Marcelo: Yeah, I got it. I got it. Okay, okay.
+1:29:17
+Tim Lee: Now this is the work that most many people right now the noobs out there are both not fully aware that they need to do and or are lazy to do.
+1:29:25
+Tim Lee: Cause, you can see, is this engineering? I don't know
+1:29:30
+Tim Lee: But but you know, AI solutions development is 80%.
+1:29:35
+Tim Lee: This type of work. Tim Lee: 20% coding. Tim Lee: maybe less, maybe 15% coding 85%
+1:29:44
+Tim Lee: swimming in data, evaluation, evaluation, criteria, evaluation of evaluation.
+1:29:51
+Tim Lee: You know, things like that. Tim Lee: And then the coding itself
+1:29:56
+Tim Lee: is a lot of plumbing. Tim Lee: you know a lot of parsing, feeding in prompts, parsing it back in feeding like, and doing like cycles of stuff.
+1:30:07
+Tim Lee: Alright. So let's see here. Tim Lee: So, for example, Priyanka asked, how would you feed it back to the prompt? What would you change in the prompt.
+1:30:16
+Tim Lee: Santiago says, for fine tuning really comes down to creating a great starting prompt for baseball. Okay? So so, Santi, I'll ask Santiago's question, because it's easy. So yes, AI solutions always start with the prompt because they give you. They give you your first, st
+1:30:29
+Tim Lee: the 1st pancake, the 1st shot, and it's it's it's not gonna be terrible. It's gonna be either 50 to 80% good, depending on the difficulty of the task
+1:30:38
+Tim Lee: right? Tim Lee: and then so from there. You kind of can lift it up to, you know, 60 to 90%, depending on the task just by doing the cycle that we're we're talking about here.
+1:30:54
+Tim Lee: and then to continue to lift it. Now we're really talking about fine tuning
+1:31:00
+Tim Lee: to to get to that level. Tim Lee: I think you know it's it's creating these golden data sets.
+1:31:09
+Tim Lee: Like, I want to call your memory back to Tim Lee: week. One, which is, do you remember less is more for alignment.
+1:31:18
+Tim Lee: Their data set Tim Lee: was only a thousand compared to 60,000, and they were able to lift the performance of that, so that it was, I think, even performed better than like one of the early Gpt, like models, which is not bad because it's for where it was like generationally as a model.
+1:31:39
+Tim Lee: okay. So I know there's a lot of questions that I didn't answer in the in the chat. But let me let me let me kind of like cruise on
+1:31:46
+Tim Lee: so the phase one of this is, we are doing the hard work of creating the evaluation. This is really mechanical and easy. I now have to like, just migrate my data set into in this case, laying fuse
+1:32:03
+Tim Lee: where I put it into an evaluation data set, although it's a similar block of code for Langsmith
+1:32:09
+Tim Lee: just to get it into into the data set. So I just need to move into the data set.
+1:32:14
+Tim Lee: And then here is an example of iterating through my data set.
+1:32:21
+Tim Lee: So I get my data set back. Tim Lee: And then for each Tim Lee: element in the data set, I score it.
+1:32:29
+Tim Lee: And so here's my my score right here, I says, hey. Tim Lee: compare the answer that I had for that I had generated. Compare it with the answer that the rag system had generated, and let me know how often that's correct.
+1:32:45
+Tim Lee: So in this case, I try to make, I made it a binary score of 0 to one. I could have made it a relative score of 0 to 5, you know.
+1:32:53
+Tim Lee: So let's see what that looks like. Tim Lee: So I've got a lane fuse. Tim Lee: and I'll go to my my data set
+1:33:02
+Tim Lee: and I'll look at my experiment. Tim Lee: So overall in my experiment, I defined a metric called accuracy. And it's actually only 29% accurate. So let's let's let's take a look at it.
+1:33:12
+Tim Lee: So Tim Lee: here's 1 where it's correct.
+1:33:19
+Tim Lee: So you can. This is the reason that I made the Lm Tim Lee: spit out. Remember that when you tell Lms to defend itself, the it tends to do a better job.
+1:33:30
+Tim Lee: So this one, it says, you got it wrong. Now look at the reason.
+1:33:37
+Tim Lee: So I'm like. Tim Lee: Okay. Tim Lee: come on, that's a little bit okay, which 2 leading investors, blue meridian and bomber one had a period and one did not have a period.
+1:33:47
+Tim Lee: So that's that's not what we want. Tim Lee: so. Even as you are.
+1:33:55
+Tim Lee: even at like again, this is like Tim Lee: evaluation on evaluation evaluation. I also want to evaluate my Llm. As a judge
+1:34:03
+Tim Lee: right. This is part of the process which is like, I need to compare it against human evaluation.
+1:34:08
+Tim Lee: So you can actually use Tim Lee: you know, in in Lang Smith. They have
+1:34:17
+Tim Lee: an area for you to do human scoring. Tim Lee: and then what I would do is I would go through the data set, and I would score it for sophistication.
+1:34:27
+Tim Lee: and then and then I would have the Lm. As a judge score for sophistication. Tim Lee: and then I would see the correlation
+1:34:34
+Tim Lee: between the human score of me. Tim Lee: and then the Judge score. Tim Lee: They're not going to be perfect.
+1:34:40
+Tim Lee: Why, how do I know that? Because if I score it and another human scores it.
+1:34:46
+Tim Lee: they will probably have a Max of point 8.8 in terms of correlation.
+1:34:53
+Tim Lee: So you're really striving it to be human, though Tim Lee: right? So you want it to be. Make sure it's matching your evaluation from from that perspective. Now, if you have this infrastructure, then this really sets you up to to play.
+1:35:09
+Tim Lee: And now you can try a lot of like different fun techniques like I'll give you an example.
+1:35:17
+Tim Lee: here. Tim Lee: I didn't give you much guidance in in doing this. I I maybe blow this up. I I don't know how many of you will get to Milestone 8
+1:35:26
+Tim Lee: but basically, instead of just doing that one query. Tim Lee: let's add a few things like a common thing is, even when the user has a query.
+1:35:37
+Tim Lee: you can actually take that query Tim Lee: and you can Tim Lee: optimize it. You can make it better.
+1:35:43
+Tim Lee: Right? You can make them ask a you can ask not only one question, but like a series of questions
+1:35:51
+Tim Lee: right? Tim Lee: to just make sure that you're plumbing the information.
+1:35:56
+Tim Lee: So let's say that if Tim Lee: someone is has some like. Tim Lee: let's see?
+1:36:06
+Tim Lee: hey? What is the what is? Tim Lee: What is the Tim Lee: Hr policy for vacations in Canada for my company?
+1:36:16
+Tim Lee: Maybe I would. I would modify that query to. I'll keep that original query. Maybe, I said. By the way, what are vacation policies in general? Because, by the way, maybe the Handbook doesn't have a regional based policy.
+1:36:29
+Tim Lee: Right? So maybe it's like too specific. So I would go. And I would kind of say, well, just give me just take me to the vacation policy period.
+1:36:38
+Tim Lee: you know. And then so there's a a phase that people do which is query optimization. So they will, you know, use an Lm to say, you know, expand this query.
+1:36:52
+Tim Lee: maybe ask in a couple of different ways, maybe use some different terms, like, you know, maybe
+1:37:00
+Tim Lee: One thing that people do, by the way, is like, don't remember. Don't forget this semantic matching thing. It's it's
+1:37:07
+Tim Lee: it's it's not a silver bullet. It's a new toy. It's a new tool in our tool belt. But but traditional search
+1:37:14
+Tim Lee: also works really good and sometimes better for different scenarios. Tim Lee: So what I might want to do, though, is, I might want to convert the user's query into a keyword. Search friendly string.
+1:37:27
+Tim Lee: So it's it's a better at better at like Googling. Right? Then. Tim Lee: what you can do is you can take that optimal query. And not only can you send it to the vector, database, but you can send it to your traditional search index
+1:37:41
+Tim Lee: and then and then get the data back from there. Then you can even add additional summarization and and other passes there to make it more likely that the final Llm. Will be, will have all the packaged up information that it needs in order to answer the question as good as possible.
+1:38:02
+Tim Lee: Right? So Tim Lee: this type of thing is something that you can play with. Once you have the evaluation, of course you can do it earlier and just do like vibe checks. But
+1:38:15
+Tim Lee: but it's actually pretty hard to poke. You really need to have this like comprehensive or more comprehensive set to really understand if you are like the performance of your system.
+1:38:27
+Tim Lee: so let's Tim Lee: let me check in on it Tim Lee: final set of questions.
+1:38:33
+Tim Lee: Okay, so let's just comment commenting, for now. Okay? So
+1:38:38
+Tim Lee: Nikrod, the lava index does provide Tim Lee: facilities, for they had this whole like Middleware stack for the queries where you have like transformers. And the in like, yeah, that man I don't know. I have real beef with. I just think it's like too complex, you know. I think you can easily just chain together.
+1:38:58
+Tim Lee: Your Lm. Calls manually, and so I feel like all of the engines and the transformers and the like. The these things. I really feel like obfus gates to the developer.
+1:39:09
+Tim Lee: like what is happening here. So I think it makes it much harder to follow the logic. It buries things into the internals of the system. So that's my personal. Take on it. I like at this stage of where Llm. Solutions are, because they are so brittle in some sense I like to expose it as much as possible rather than like hiding it into. You know, some Middleware stack.
+1:39:31
+Tim Lee: So Lama index does provide the facility for it, but I actually prefer raw
+1:39:38
+Tim Lee: so Tim Lee: what's the homework for this week? All right. So 1st
+1:39:43
+Tim Lee: go through this lab. Tim Lee: This lab doesn't require any code modifications. So really, I think the test is just
+1:39:52
+Tim Lee: just prove that you can run it. Tim Lee: poke around in it, try to get a flavor for it. If you wanted to feed it your email, you can. You don't have to do that step. Play around with the embedding stuff. See if you can get Jupyter notebooks working
+1:40:07
+Tim Lee: in your in your system. Encourage you to download cursor, give it a try
+1:40:12
+Tim Lee: and then but the real work Tim Lee: is, your mission is more just to like to understand the code, because the the.
+1:40:21
+Tim Lee: the, the balance of your time is to work on your capstone project, either your solo capstone project or your group project.
+1:40:30
+Tim Lee: So commit to the idea. So I know it's hard to just choose the idea. But just choose your final idea. If you don't love it, then just make it as elaborate as possible from a technology perspective. Just to flex your Lm solutions muscle.
+1:40:46
+Tim Lee: But hopefully you're excited about your app idea. I tried to divide up the milestones so that they can be somewhat, you know, easy to farm off to different people. So if you're solo, of course, do it all. If you're in a team of 3, so someone can be working on the prompt
+1:41:04
+Tim Lee: and making your good good. One page prompt, doing a lot of testing a bit. Someone could be working that evaluation set. I I really sandbagged it and made it easy, just 10 solid evaluations. But
+1:41:17
+Tim Lee: see if you can challenge yourself to see what it takes to generate 50 Tim Lee: right through this like through this, like, obviously, you're not handwriting 50,
+1:41:25
+Tim Lee: right? It's really you're doing this process of the cyclical process with
+1:41:30
+Tim Lee: with, you know, your these generated valuation sets, and then evaluating why, you'd like or don't like them, improving them and and going from there right?
+1:41:38
+Tim Lee: And then the 3rd person can be working on your L as Lm. As a judge, you know solution where you will be taking your evaluation data. Set
+1:41:49
+Tim Lee: and then writing a writing. The judges for the different metrics for it, so you can be all scaffolded and set up
+1:41:56
+Tim Lee: so hopefully. This is clear. But
+1:42:03
+Tim Lee: yeah, let me know. Give me give me feedback. I think I think last week I think the folks didn't quite understand the the thrust of it sometimes for this. So like this is the mission for this week.
+1:42:14
+Tim Lee: Yes, I'm sorry. I I forgot to add that section. When I'll add a submission thing in this document. So you can just stay in the same document. You'll have a link to a Google form where you can submit your lab that you upload your version of it, and then your capstone. Just have each group member submit the capstone. I know it'll be duplicative. But just give me the the Github URL everyone. Everyone submits. So the form will be here at the bottom in in just in just a few moments after this class.
+1:42:45
+Tim Lee: Cool Tim Lee: any other any other questions
+1:42:55
+Tim Lee: where we are already Tim Lee: one and a half weeks through this class
+1:43:01
+Tim Lee: is your L. Your Lm. Solutions. Brain is hopefully already growing. Tim Lee: is it already? Are you already feeling like you're getting, I think, hopefully, more intuition
+1:43:10
+Tim Lee: and more hands-on with with this.
+1:43:15
+Tim Lee: I don't have office hours, but I could. I could do office hours if if that is would be popular. So
+1:43:21
+Tim Lee: I'm gonna let let people go. I know it's late for for some in in different coasts. I'll hang out here for a minute or a few minutes for lingering like questions. I know I didn't address a lot of the questions that were in the chat.
+1:43:35
+Tim Lee: But thank you. Tim Lee: I'll see you all later. Tim Lee: And then I'll I'll hang out here for questions.
+1:43:45
+Mahesh Dathrika: So. I have a question on the rag. If if my data is huge.
+1:43:51
+Mahesh Dathrika: to write new. Mahesh Dathrika: do a rag, or you know. Tune my model.
+1:44:00
+Tim Lee: Let's see here. So if your data is huge, like Tim Lee: you will. So the larger your data.
+1:44:07
+Tim Lee: the more likely that you'll need to use rag. Tim Lee: So it is very hard to kind of like
+1:44:15
+Tim Lee: bake a lot of new model knowledge into a model via training
+1:44:20
+Tim Lee: like what's effective from a fine tuning perspective is to is to shape quality and behavior. So, for example, you can fine tune a model to be better at generating stories, better generating summaries, but in terms of like
+1:44:35
+Tim Lee: sending it to Med school, or, you know, making it a specialist of this new textbook that you wanted. It's very difficult to do
+1:44:43
+Tim Lee: so so you'll likely need a rag solution.
+1:44:49
+itasari: So is my understanding correct that rack in this case kind of helps itasari: personalize your model to what your specific needs are.
+1:44:59
+Tim Lee: It. Your rag is useful when you just have a lot of external data you need to fetch. Tim Lee: So
+1:45:06
+Tim Lee: in your project, you you said, you're working on a nutrition now, that's interesting. Because, like the base, the the model already is gonna have a lot of like nutritional information in it already. So you probably don't need rag for a lot of that stuff right? So for you, in your case, you're building a nutritional coach. Maybe you want to be able to feed in, like the person's history over the last 3 weeks.
+1:45:30
+Tim Lee: Behaviorally like, what are they? What have they eaten? What have they done? So in that sense? Remember, rag and vector? Databases? They're don't like always fully associate them. Rag just stands for retrieval augmented.
+1:45:43
+Tim Lee: So in your app, you would just more likely go and fetch Tim Lee: that customer's data
+1:45:48
+Tim Lee: and put it in the context, so that when your nutritional coach is ready to do next step, it has the context of that. That patient.
+1:45:56
+itasari: Okay. Thanks. Tim. Mahesh Dathrika: So one other follow up question I have, for on embedding model is if I have a
+1:46:06
+Mahesh Dathrika: model that I'm Mahesh Dathrika: in this case llama, or anything, or lama. Right now.
+1:46:12
+Mahesh Dathrika: should I use a compatible embedding model, or or can I use any other embedding model.
+1:46:18
+Tim Lee: It doesn't matter. They're not. They're not related. So there's 1 that does the Lm like text generation.
+1:46:25
+Tim Lee: That is the one that you kind of like talk to like a human. And then there's the model that's responsible for taking a snippet and changing it into an embedding or a vector, so you know, that is happening in a different pipeline. And so, yeah, you don't need to. You can mix and match.
+1:46:48
+Rani Horev: Is there a rule of thumb when to use embeddings versus when just feed it? The
+1:46:55
+Rani Horev: the raw document. Tim Lee: Like, feed it into the context.
+1:47:01
+Tim Lee: Yeah, like, like. Tim Lee: so it's just it's Tim Lee: to, well, okay, it just it depends on the use case. But, for example, like a couple of simple heuristics, is is, of course, document size matters.
+1:47:15
+Tim Lee: So if it's a if it's a like a lot of support stuff. You might have the support policy in like a 2 pager.
+1:47:22
+Tim Lee: Right? And so if it's a 2 pager, you can just fit it into the whole context. And that maybe is like simpler than having it interact. So one factor is the size of the document. To the second one is like how quick you want the response, or you need the response to be
+1:47:37
+Tim Lee: and 3 is, for example, do you need to do like additional processing like. For example, there's like, maybe. Well, let's call like there's 2 categories of rag, type pipelines, one which is a lot of cases which is like you just need one round trip, one query, one fetch of related stuff, and then and then back the other categories, where you may be doing
+1:48:00
+Tim Lee: 2, 3 4 cycles. Tim Lee: Fetching analysis.
+1:48:06
+Tim Lee: Ask another question. Fetch again, you know. So you know those types of things you're you maybe are pointing you towards a embeddings based.
+1:48:17
+Tim Lee: you know, workflow. Likely for that scenario. But it's very use case dependent.
+1:48:23
+Tim Lee: Do you have a use case in mind? By the way, that you're you're working on, or you just is this just theoretical.
+1:48:28
+Rani Horev: It's we have we are building. I think I told you before us a service that
+1:48:34
+Rani Horev: creates Rani Horev: quizzes 4 courses. Tim Lee: Okay.
+1:48:40
+Rani Horev: So the courses could be like variable length.
+1:48:45
+Tim Lee: And the course is represented, as you know, probably what 8.
+1:48:50
+Rani Horev: An object. Tim Lee: But I mean, is it like a a transcript of a bunch of videos and then projects, and so on.
+1:48:57
+Rani Horev: It. It depends again on like, it could be just. Text could be images. It could be
+1:49:03
+Rani Horev: videos. But at the baseline is just text. For now. Tim Lee: So this is like, if I were doing something like and I I would. Do you know, it's always good, like engineering style. You do the naive solution first, st and then like kind of upgrade from there. But if it was, if I was building a course assessment, my instinct would be to 1st put the course through passes of summarization.
+1:49:23
+Tim Lee: So that I can give the assessment creator. The cliff notes of the broad view of the class general notes and observations of it. Target audience, you know. And and in addition to doing additional fetches. So I I would consider, you know, doing a like a like doing other passes of like compression and analysis.
+1:49:47
+Tim Lee: To help the assessment and generate better assessment.
+1:49:55
+Tim Lee: Mahesh says, when should we store vectors in dB, so I mean right now the examples I gave. It's all in memories, of course.
+1:50:02
+Tim Lee: that is Tim Lee: only good for Demos, and very, very small use cases. So
+1:50:09
+Tim Lee: In this case you could pretty easily, though, upgrade to a database and store the vectors in a database. There's a built in local ones. Chroma. You can try the hosted ones, pine cone or v. 8. I. I would try the hosted ones just to kind of experience them, but you can also do the local ones.
+1:50:35
+itasari: Tim, I have questions about evaluation. Kind of itasari: running through exercise from last week. And
+1:50:43
+itasari: you basically run your data set using one model, and then you evaluate with the same model.
+1:50:50
+itasari: Is that kind of itasari: is it better to like? Do one like use 2 different models to run evaluations on it, or because
+1:51:00
+itasari: it just seems like it's not great, like evaluating itasari: whatever the model
+1:51:06
+itasari: comes up with. In the 1st place. Tim Lee: That's a good question, you know you
+1:51:11
+Tim Lee: you certainly do not have. You can use the same model you. So the model that you choose. Basically, you want to choose the model that's sophisticated enough for the task.
+1:51:22
+Tim Lee: So, for example, I used the 3.5 model and you can see that it it. It said that the answers were different because one was missing a period
+1:51:34
+Tim Lee: right? That was Tim Lee: now I could try to fix that by like going back to the prompt and really like Hey.
+1:51:40
+Tim Lee: you know, just focus on semantic equivalents, and not like. Tim Lee: you know. So I could fix that via the prompt, although I bet if I had just changed it to like 4 0, many, even or 4. 0, that problem would have like kind of like gone away. So whether you're doing evaluation or generation.
+1:51:56
+Tim Lee: you independently Tim Lee: test to see, like what level of sophistication you need for that task.
+1:52:04
+Tim Lee: Now, there's a small thing, and where that it's been shown that
+1:52:10
+Tim Lee: if a model is given, answers from like 3 other models, including itself, it tends to prefer answers generated by itself.
+1:52:22
+Tim Lee: But I don't think that's I don't think that's the question that you're asking. I think I think you can. You can certainly use the same one, you can use different ones. The the question really is, what's the minimum model that you need to accomplish that task? Generation, for example, tends to be harder to do. Evaluation tends to be a little bit easier.
+1:52:40
+Tim Lee: But you you have to like. You have to just test it and see if it, if it matches your expectations.
+1:52:46
+itasari: Okay. Tim Lee: And independently.
+1:52:52
+denisura: I have a quick question to clarify if you don't mind. So my understanding that you as a as as an alternative, you could use, like elasticsearch to find data necessary to kind of like
+1:53:04
+denisura: put into the prompt right? You don't need to like denisura: embedding at all right. Embedding is just like extra option. That which was a good use. Case, I see, is like, if I embedding like images or like photos.
+1:53:18
+denisura: right? So it's that's probably like good example of like. Why would I want to use a vectors right? Because elasticsearch doesn't
+1:53:26
+denisura: do much of oh, any others of denisura: that can process images right?
+1:53:31
+Tim Lee: Yeah. So of course, images. But you know, there's definitely cases where vectors are great, like, for example, and you know, because if you do. Keyword searches. One problem with keyword is that you can get an explosion of results.
+1:53:43
+Tim Lee: Cause if you, if you you know if it's a relatively common keyword. Then you have to do a lot of like sifting in the document to find what it's whether it's the
+1:53:54
+Tim Lee: the right time. So I mean, the semantic matching does work pretty well over keywords for some use cases.
+1:54:01
+Tim Lee: but it also does not surface certain documents that you might expect to surface, maybe because it's just like too narrow. It's like a scalpel and a sniper.
+1:54:10
+Tim Lee: So I think the the real answer is that like? And this is why, by the way people will often, I think, one of the most popular things to do to do is to do a hybrid and fetch from both simultaneously, and then rank the results. So in in real, in practice, that's, I'm seeing as one of the most common techniques.
+1:54:30
+Tim Lee: Yep. Tim Lee: which we v. 8 supports out of the box. By the way, so you can just do one query and it will do both. It will do both the keyword search the vector, search and merge the results.
+1:54:49
+Tim Lee: Okay.
+1:54:55
+Tim Lee: yeah, I think. Tim Lee: I think we can call. I'm just getting Willie. Can I call you out for a second? Well, you seem to know a lot of this stuff already. I'm just curious. What were you hoping to
+1:55:06
+Tim Lee: to learn or fill out your knowledge with.
+1:55:13
+Willy Xiao: I like. For me, it was mostly the product intuition, like, there's a bunch of Willy Xiao: like I haven't implemented any of this or use any of this in pride. And so like, I think, a lot of the like
+1:55:22
+Willy Xiao: details like, so like, okay, like, last week, learning about the existing tools for evaluations. Like when you were talking about genuine, the evaluation set with like scores like, Hey, give me a score on this like that was interesting today. Some of the rag stuff that I asked about, like all of that was like kind of new to me. So there's a bunch of these like
+1:55:42
+Willy Xiao: last mile productionization, things that I think Willy Xiao: I don't have like a great handle on, and understanding them like, gives me a better intuition around the limits of the products that we can build, but like the like my back, like I, I know the like stats behind it, just from
+1:55:59
+Willy Xiao: having done stats stuff and then read about it recently. Willy Xiao: And then I'm we have some adjacent
+1:56:05
+Willy Xiao: Llm stuff that we're kind of working on. So I like Snoop to see? Like what's happening there.
+1:56:12
+Tim Lee: All right. Well, of course you're welcome, but I was just kind of curious what your goals were. Cool, all right. Well, I'll see you all on discord. Let me know if you have any questions about any of this stuff and I will see you next Tuesday.
+1:56:25
+itasari: Thanks, Tim, thanks, Dan and everyone. Sideok You: Thank you.
