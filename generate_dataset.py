@@ -6,20 +6,24 @@ load_dotenv()
 
 from openai import OpenAI
 import json
+import config
 
 client = OpenAI()
 
 # Function to generate questions and answers
-def generate_qa(prompt, text, temperature=0.2):    
+def generate_qa(text, temperature=0.2):    
+    generation_prompt = config.GENERATION_SYSTEM_PROMPT.format(system_prompt=config.SYSTEM_PROMPT)
+    print("Generation Prompt: ", generation_prompt)
+
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": prompt},
+            {"role": "system", "content": generation_prompt},
             {"role": "user", "content": text}],
         temperature=temperature,
     )
     
-    print(response.choices[0].message.content)
+    print("Completion: ", response.choices[0].message.content)
 
     # Strip extraneous symbols from the response content
     content = response.choices[0].message.content.strip()
@@ -41,55 +45,42 @@ def generate_qa(prompt, text, temperature=0.2):
         print(content)
         return []
 
-factual_prompt = """
-You are tasked with generating questions and answers using class notes, video transcripts, etc. as reference. These questions should focus on retrieving specific details that were discussed during the class. In addition to providing an accurate answer to the question, the response should provide a timestamp of where in the video recording this relevant information can be found. These should reflect the type of questions a student might ask after attending the class and they want to review the material or re-watch a specific part of the recorded lecture.
-
-Instructions:
-
-- Generate **10** factual questions, each with a corresponding **expected_output**.
-- Ensure all questions are directly related to the transcript.
-- Present the output in the following structured JSON format:
-
-[
-  {
-    "question": "<question1>",
-    "expected_output": "<answer1>. This was discussed in the recorded lecture at around the 1:09 mark."
-  },
-  {
-    "question": "<question2>",
-    "expected_output": "<answer2>. You can listen to this discussion at 3:05 in the lecture video."
-  }
-]
-"""
-
 # Generate dataset
-import os
 import json
 
-# Retrieve context
-with open('data/llm_bootcamp_week1_transcript.txt', 'r') as file:
-    text = file.read()
+def main():
+    # Retrieve context
+    with open('data/llm_bootcamp_week1_transcript.txt', 'r') as file:
+        text = file.read()
 
-# Generate dataset if local file doesn't exist
-dataset = generate_qa(factual_prompt, text, temperature=0.2)
-        
-# Note: we're choosing to create the dataset in Langfuse below, but it's equally easy to create it in another platform.
+    # Generate dataset if local file doesn't exist
+    dataset = generate_qa(text, temperature=0.2)
+    if len(dataset) == 0:
+        print("Failed to generate dataset.")
+        return
+    else:
+        print("Generated dataset size: ", len(dataset))
 
-from langfuse import Langfuse
-langfuse = Langfuse()
+    # Note: we're choosing to create the dataset in Langfuse below, but it's equally easy to create it in another platform.
 
-dataset_name = "llm_course_qa_pairs"
-langfuse.create_dataset(
-    name=dataset_name, 
-    );
+    from langfuse import Langfuse
+    langfuse = Langfuse()
 
-for item in dataset:
-  langfuse.create_dataset_item(
-      dataset_name=dataset_name,
-      input=item["question"],
-      expected_output=item["expected_output"],
-      metadata={
-        "date": "2024-09-10",
-        "tags": "lecture,week1"
-        }
-)
+    dataset_name = config.EVAL_DATASET_NAME
+    langfuse.create_dataset(
+        name=dataset_name, 
+        );
+
+    for item in dataset:
+        langfuse.create_dataset_item(
+            dataset_name=dataset_name,
+            input=item["question"],
+            expected_output=item["expected_output"],
+            metadata={
+                "date": "2024-09-10",
+                "tags": "lecture,week1"
+                }
+        )
+  
+if __name__ == "__main__":
+    main()

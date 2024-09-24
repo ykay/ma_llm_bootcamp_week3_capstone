@@ -1,6 +1,7 @@
 import chainlit as cl
 from langfuse.openai import AsyncOpenAI
 from dotenv import load_dotenv
+import config
 
 # from langsmith.wrappers import wrap_openai
 # from langsmith import traceable
@@ -26,7 +27,7 @@ model_kwargs = {
 
 # System prompt w/ context
 system_msg = (
-    f"You are a teacher's assistant who provides answers by referencing video transcripts from recorded lectures. In addition to providing an accurate answer to the question, the response should provide a timestamp of where this relevant information can be found in the video (e.g., This was discussed in the recorded lecture at around the 1:09 mark): \n\n\n {full_text}"
+    f"{config.SYSTEM_PROMPT}: \n\n\n {full_text}"
 )
 
 @cl.on_message
