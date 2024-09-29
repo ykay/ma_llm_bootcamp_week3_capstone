@@ -1,0 +1,823 @@
+Video URL: https://youtu.be/AiZxP1JQTiY?si=tV9w8sceBKLO0Exw
+0:00
+Oh, okay, alright. So I'm gonna I'm gonna get started. Okay, so In the chat you have pasted in here.
+0:08
+A paste that one more time, the the interactive lab that we're gonna do today. So it's gonna be a little bit different session. Today, I'm gonna give you more time to play with this. I've created a set of challenges and challenges of complexity that will start to layer nuance into function calling use cases. So your mission today.
+0:28
+Which I think we'll be able to hit is that. If you have never heard of function calling before calling, they're the same thing function calling tool calling.
+0:38
+By the end of this I think we have a really practical understanding of how to implement it manually, and how Openai and anthropic implement it under the hood.
+0:47
+So it's a fun set of challenges. So before we step into that, I want to spend a little time.
+0:53
+Reflecting on the last week before we move forward. So.
+1:00
+I'm just gonna share my screen here. Okay. I have the chat open.
+1:09
+Let's. I want to invite you. I don't want to just tell you the answers to these.
+1:16
+You know. If I could even give you even open up your chat. Gbt.
+1:22
+And if you'd like, you can use this helpful, prompt. But I want to 1st see.
+1:30
+If you understand. This warmup question, which is, what is the difference? Last.
+1:36
+You know that we we talked about last week between an embedding. A vector and ray flips.
+1:45
+So. So take a moment. You can paste things in here, but. If you happen to know the answer to this.
+1:51
+Question, then. I give the people a moment to warm up, but.
+1:57
+I don't. If someone can. If someone has an idea of what. What the answer is. Let me know!
+2:05
+Alright! So we have. We have the first.st 1st thing. Let me just mute.
+2:12
+Some folks here. Okay. So. What about? Why?
+2:19
+What about? Why, Why use cosign versus face.
+2:35
+Yep. So, you know, cosigned, more accurate face will not exceed.
+2:42
+Their performance in terms of accuracy of face. But you know, practically speaking, will be too slow.
+2:49
+Alright. So these are all warmup categories. Alright! Here's we're starting to get into thinking questions. Now.
+2:55
+So when using embeddings and semantic matching, when is it good. And when does it fall down.
+3:11
+And let's get some voices in the room. Too. So is anyone.
+3:17
+Want to share what framework they're developing. In their mind, for.
+3:23
+Questions that work well, and then questions that. You probably would guess it would struggle with.
+3:36
+So Ivan says, reasoning versus recall. I assume you're saying, recall questions. It can do.
+3:42
+Reasoning. Yeah, the yeah, the embeddings. It's it's kind of what you're showing. The embedding.
+3:48
+However, with the embeddings you could see how close the text. Is to each other. So it's like recalling facts.
+3:55
+Versus actually. So is versus the the actual meeting, or being able to.
+4:02
+Reason do any kind of. Aggregation or summarization. That reasons.
+4:09
+So let's say that you had a document. Like one of the. One of the team members here, if you don't mind me sharing like this is an example of a resource that we want to.
+4:23
+To to do rag. So this is a. Women's health app, and this is a guide to healthy pregnancy.
+4:31
+Right. So it's all this useful information on on this. And let's say that I do want it to.
+4:38
+Do reasoning or aggregation. You know, questions like, for example.
+4:44
+Let me ask the question, hey? What's what should I know? The 1st 3 trimesters.
+4:52
+Of the pregnancy. What should I know over the 1st 3 trimesters of the pregnancy.
+4:59
+Which, of course, spans, chapters 2, 3. And 4. How would you implement a solution?
+5:06
+That would work well for that question. Type. Yeah, I think.
+5:12
+Maybe understand correctly. I would take the content. Of the document, put it in the. Put it like user act pattern.
+5:20
+To make sure that it's. Leveraging that content in as literal way as possible, but in the prompt also tell it like, Hey, include sections from each of these things, and make sure that when you're quoting details in terms of specifics.
+5:35
+That you're quoting it as directly from the content that was fed in through the rag.
+5:43
+Cool, interesting, interesting idea. And, by the way, for Rag, there's a lot of these ideas, people try a lot of techniques. So it's not just one solution here.
+5:51
+There is a bunch, so I would invite another person to share. Hey! What do you think. If you want to answer the question.
+5:59
+Give me the Tldr. For what I need to know about the 1st 3. The 3 trimesters.
+6:05
+And this is my resource.
+6:15
+And I don't know if Ronnie, if you were answering that question. But I don't think you're. I don't think that solution would work for that particular question. Because it's it's to. It's.
+6:23
+That I think, Ronnie, your solution will work. For like more specific questions. Like which prenatal vitamins.
+6:30
+You know? Do I need to take.
+6:51
+Let me ask you a question. How would you answer that question as a human. If you were a human.
+6:57
+And you were. I gave you this book and say, Hey, I'm not. Gonna look at the book. Here's the book, hey? You know. What do I need to know about the 1st 3 trimesters.
+7:06
+What would you do? From equal to the ball kind of like the important.
+7:13
+Yeah. Sorry your audio, Priank, is not coming to through super clearly for me. Oh, yeah, I think somebody in chat as well. Summarization like, go to the actual book.
+7:23
+Get a high, level summary. So would you create that separate as a separate.
+7:30
+Document, and kind of keep it to the side. Yup probably summarize it, so the 1st step would be to summarize it.
+7:39
+And then. Apply, I guess.
+7:45
+Semantic match on the salons. Okay. Semantic match on the summary. Alright. So Davis is saying, cliff notes, but okay, but.
+7:53
+But now you know. And and Harley has an interesting one. Read the Table of Contents.
+8:01
+And then check glossary. So you're you're kind of implying, maybe, like 2 passes. Like do a rag, or maybe not even a rag, maybe just a full insertion of the table of contents.
+8:11
+Into the query. And then applying some.
+8:17
+Logical, fetch. Like Davis. Can you expand on your answer a little bit so like let's say that you have these cliff notes.
+8:25
+Right cliff notes will help you. Maybe get the directional. But if I ask, follow up questions.
+8:32
+How would you handle that. Or like. How does it? How does how do you see the cliff notes interlacing with.
+8:39
+The full document. Yeah, it's not like using the left notes as a pointer to where I should look for the information.
+8:47
+So follow up questions will be able to quickly find the areas that if you want specific details of. Any ambiguity can be clarified by running that.
+8:56
+Area. So this is a very key piece of information in your visualization of the cliff notes.
+9:02
+You've tagged it with where you pulled that piece of it. Yeah.
+9:08
+From, and so maybe you're imagining 2 fetches like one. Fetch. To the cliff notes, and then maybe on the side.
+9:16
+Right, you could be lazily fetching the references. The references or the more details that you want here.
+9:22
+Yeah, that's an interesting idea. And I think I think one key is like, you don't have to do it sequentially too right, like, you can pull classic engineering tricks like eagerly load.
+9:31
+Like as as the as the user is digging in. You know, you could be like reading ahead. So how the secret, how I teach my kid.
+9:38
+Which is like, what do you do, Singapore? Math? Now these what are the heck? Are these things? And you you like you do like a read ahead.
+9:45
+To be like just ahead of them that that could be interesting. Alright, so I wanted to get your get your that was part of my learning goal for last week.
+9:54
+Which is when you look online and people talking about rag, they really narrowly talk about it. The broader thing about rag that people don't publish a lot, but is the practical challenge of it is.
+10:06
+What are these? You know? More sophisticated.
+10:12
+You know, multi or pre indexing, or, you know, a lot of like potential strategies.
+10:18
+And I would say that people are still heavily exploring what patterns actually work. So a lot of things work and see in in theory. But then, when people have been trying it it doesn't it? Sometimes it doesn't perform as well as as you think. So one key is always have strong evaluation questions.
+10:36
+So you you're your mission as an AI engineer is, you know, you really have to be specific about the types of questions you can support. And then you can test your algorithms against their performance. There.
+10:49
+Okay, so this is a recap of kind of rag.
+10:55
+Let's let's answer this. Quick! Question this last one here. Okay, let's say that I've cleverly come up with my recall strategy.
+11:04
+Admit whether it's single pass, because it's a simple question, or whatever it is right. What do I now.
+11:10
+Where do I now put those documents as I'm building a chat app.
+11:27
+Michael says in the context window. And strinking cat. Okay, so let's capture those ideas.
+11:35
+And we'll we'll be a little bit. And we'll we'll add one layer of specificity to that. In in this next demonstration.
+11:42
+Okay. So let's talk about the escalating. Function.
+11:48
+Quick question on that. Yeah. Like it would. If you want to add additional information based on the tree.
+11:57
+Do we actually add it to like user prompt system? What is the difference between the 2.
+12:03
+Excellent question. So it's not a single answer. And you see people in the chat kind of like speculating on on things.
+12:10
+On where to put the extra information. So I'm gonna cover it in in the context of in the next.
+12:17
+Few minutes in the in the context of this demo. Okay, so.
+12:23
+This 1st milestone, which, if you, if you are able to multitask, you can get started with it. If you're not, you can just listen for now.
+12:31
+But I just basically gave you a starter, a quick starter for basic chain lit application.
+12:41
+And the 1st milestone is where the 1st challenges, which is.
+12:47
+I want. To. I wanna be able to fetch now playing movies.
+12:53
+So let me show you that in a demonstration so. I will!
+12:59
+Run. 7.
+13:08
+Okay, so hey, what's up? Okay, so, yes, actually.
+13:17
+What's plan and. Theaters. Now, of course, you know, the AI is not gonna know this. It's an Lm that was trained long ago doesn't have recency information.
+13:26
+And so what it's gonna do is. If you see what has happened is it's emitting this thing.
+13:34
+I could hide this. This is it just talking to itself? I chose to reveal it now, so you can just like see the internal chatter.
+13:42
+In fact, I really love solutions where and that this is what o 1 preview does by the way they have it talking to itself before it responds to you.
+13:51
+So it says. It has done one thing already, which is, it has.
+13:57
+Interpreted the query and made a decision. Hey? Am I able to answer the question with my current.
+14:05
+Information, or am I not. So I don't think I am. And I think it would be helpful if I called this function.
+14:13
+And then it does this summarization. So let's.
+14:20
+You should in this session you should have your. App open. So let's look at what it took to accomplish that.
+14:28
+So in this message. There is. This generation.
+14:39
+So it's. One thing that I want to illustrate is, remember that.
+14:47
+In in Lms, it's a text input text output. So as people are saying in the chat.
+14:53
+It is a context is the whole chat. Input and then you have a chat output block.
+14:59
+But there's a nuance here that. Chat apps build on that concept an additional convention.
+15:07
+Which is in the input block. They're very specific about the structure. It's arbitrary, because, remember, this is an Lm, it can deal with arbitrary and unstructured input. But just by convention. Open. AI led with this, and said, Hey, you know what if this happens to be a chat at.
+15:22
+I'm gonna choose to format my chat messages in this like Json structure, where you have role and content.
+15:30
+So the nuance to the answer that people. Have is. Yes, of course, it's in the prompt. It's in the input section.
+15:40
+But since it's in the context. Where should I place. You know the.
+15:46
+The a added rag or function call, you can place it. In the zeroth. Item.
+15:53
+You can place it near the query. You can. You can put it. As the role of assistant system or user.
+16:02
+And so those are all decision points as to like where to inject. You know that that particular piece of information.
+16:10
+So, okay, so this 1st use case is pretty straightforward. You know your mission is, you somehow need to.
+16:19
+Program it via writing the right set of English sentences. That teaches it how to evaluate and understand.
+16:27
+When to do that, fetch. The same was true in this book. Here, right? Because the the challenge with.
+16:35
+Certain rag resources is the Lm. Already knows these topics. So you have to give it some.
+16:42
+Flow chart for understanding. Hey? When do you consult yourself. And when do I encourage you to use rag or.
+16:52
+Or whatever. So your 1st mission is to kind of construct the prompt that allows it to make that discernment.
+16:58
+And then you have to arrange how you all are. Gonna communicate. Which is like you. Obviously, you, the Lem obviously cannot call functions yourself.
+17:08
+You can only output text. So I need, we need to develop like a code language. Where, when you generate this.
+17:15
+I know it's a function call, and then I can execute it on your behalf. So if I were to do that.
+17:25
+Then, then that's how you do alright. So. Milestone, 3.
+17:32
+You get a little more challenging, which is. Not only am I adding a second function. So now your prompt has to help disambiguate.
+17:41
+Between 2 functions. But the second function also has 2 query parameters.
+17:47
+Because I want to be able to fetch show times. And so how do you handle. The error.
+17:54
+You know, handling of queries.
+18:00
+Yes, Brad, you're you're right. So functions are doing like Lms can only generate text right? So if you want them to do something functional like draft an email for you and send it.
+18:10
+Or you know. Write a story, then post it to the Api, so it saves it.
+18:17
+Right? Because you you for making the storyteller apps one of the groups is doing what? What is the user? Gonna copy and paste the stories. No, those have to be saved somewhere, right to the to the Api.
+18:28
+So you have to enable that functionality. Alright. So let's let's get a sense for what that looks like. So.
+18:37
+Cool. I'm interested in this. A any other. Movies.
+18:44
+You notice this? By the way, I asked for any other movies. It did not. It did not generate another function. Call.
+18:52
+Okay, so, okay, how about. Show times for alien.
+19:00
+Romulus. Okay? So it's asking me for additional parameters.
+19:09
+Okay? 9, 4, 1, 5, 8. My Zip code in California. And it's now doing a function call.
+19:16
+And then I have my thing returned. So this is really important because.
+19:23
+How do you do? Error, because conversations can have twists and turns.
+19:30
+Right? So how do you? And where do you add the logic.
+19:36
+Of those twists and turns. Right, because it's not gonna be a single thing of like. Every. The user sentence is always going to be.
+19:44
+You know, I wanna watch an movies right? It's it's it's. And in this case you can see like. And I omitted the query, let's let's let's see how smart this is going to be a test. I have no idea how well I'll handle this.
+19:55
+Alright, so I'll say. Actually, I want. To change my location.
+20:05
+I want to watch. From outer space. I have no idea how it's gonna handle this clearly, an invalid.
+20:16
+So it chose to do the right thing, which is. Like, you know one version of this. Lm.
+20:22
+You know what? Maybe maybe he listened out of space. And maybe there's movies there. So it could have generated a function call.
+20:29
+There they had erroneous. You know. Thanks. Now, let's go back in here, and I'm going to.
+20:39
+Come over here to movie functions. And. Here's where the.
+20:46
+Things are being returned instead of the formatted movies. I'm gonna return.
+20:53
+The, the. Tmd. The Api.
+21:00
+Main town encountered an error. While fetching.
+21:08
+Okay. So I'm gonna save this. Now let me ask you a question.
+21:15
+So answer this in the chat. This is not. This is not a rhetorical one. If your Lm. Encounters this error.
+21:23
+Do you want it to just inform the user that there's an issue, and they should try again? Or do you want to retry.
+21:31
+Do you want to inform the user to try again? Or do you want to retry.
+21:38
+So in the chat, what would what do you want behaviorally to happen.
+21:45
+Depends on the error type. And, Willie, how many times would you retry.
+21:51
+Couple. So Dennis saying, Retry but a couple times 3 fixies, maybe 5. No more than 3 depends on that.
+21:58
+Server type. Now, okay, so these are all very interesting questions. Now, answers, let me see what it does right.
+22:05
+Please. Please, fetch.
+22:11
+Current Now think of this.
+22:18
+Okay, so what's interesting? Is
+22:24
+Because this is how non-deterministic it is. I've seen it behaviorally do. Both. I've seen it, Retry.
+22:31
+And I've seen it tell the user that there was an issue. Welcome to the beauty of programming. With Lms, right? So you have to think about them.
+22:39
+They're just much, more, much less deterministic than. You know, program systems.
+22:45
+Of course. Now you can guide it right. You can add things in the prompt if you counter errors. You know. I want you to.
+22:52
+Do this, or you can. You can kind of how you glue together. Programmatic is also up to you.
+22:58
+Right preak asked, why would that be? Well, because that's the nature of Lms. They're they're statistical machines. So they are, you know. Just think about them as like.
+23:09
+You know, working with multiple customer support people. Sometimes they don't give. If I don't like get the answer I like from a customer service person. Sometimes I'll just like, you know, thank them, and then call again, because the next one.
+23:20
+Might might help me in a different way. So lms are like that.
+23:26
+Okay, so let's let's go on. So this is the second challenge, which is. Yeah, multiple functions. And then inviting you to think about.
+23:32
+How you handle errors. Errors, as well as. Other things. Now I would say that.
+23:40
+Just simple. Quick. Tip. I would not. I don't think it's generally a good idea to put a lot of.
+23:46
+Programmatic in there, because. It can make your solution very brittle, because if you don't get the state machine right, then you make it caught in a weird part of the conversational State machine.
+23:58
+Alright! Let's get fancier. Because that was kind of like, choose one function, run, one function.
+24:04
+Let's see if we can. Chain together functions.
+24:13
+And. And Willie asked a really interesting question. So let's let's segue to that really quickly. So is the retry logic implemented by the Lm. Or wrapped an Api itself.
+24:25
+So you you have your choice. You, and you can even I don't know if it was wise to do both right. But.
+24:34
+You know you can tell. And coordinate with the Lm. To manage the Retries.
+24:40
+Although, like I don't know if that totally makes. A lot of sense, or you can do it. You can do it programmatically, or like Harley mentioned, it can be case dependent, and you can kind of tell and guide the Lm. When to refine, when to not.
+24:54
+Okay, so look at changing functions. So here we go. Now I'm gonna I'm gonna try this query right here.
+25:06
+So I'm gonna leave the error in here. Just because I'm curious how it's gonna handle that.
+25:13
+Okay, cool. I actually think that's really behavior. So I don't know if I chose that, but I I do like it.
+25:21
+Alright. So now let's let's. I'm back here we pick the error.
+25:27
+So makes the function call. Now this is interesting because I've seen it do.
+25:33
+2 different things before. So the problem before.
+25:39
+Oh, wow! That's that's interesting. Okay, so. What I read is yesterday. Behave differently.
+25:46
+When I got the showtime, which is not really playing in San Francisco right now or near me. It then chose to tell the user.
+25:54
+Hey? Actually, I couldn't find show times for the crow. This time it chose to Retry. And then I'm curious, if despicable. Me only had one showtime, so did it also go ahead.
+26:05
+And decide that I didn't want to decide the show Times. Either. So let's see here.
+26:13
+Look at how many? Look at how many calls, are going to the. Okay, anyway, Oh, so no, it just happens to only have one showtime.
+26:22
+For today, which makes sense. Okay? So let's let's.
+26:28
+Let's continue with the escalating challenge. So
+26:34
+Hey? You know, it's pretty feels pretty safe to allow Lms to retrieve data. But you know what feels kind of scary.
+26:41
+Letting it write data. Right. So in this case it's making a purchase. So I don't know if I want it to do that. So this feature is about the idea of.
+26:52
+Yes. Go ahead. So I don't know if this considers this.
+26:59
+Okay. So here it says, go ahead and then. Now it's just echoing for me one more time. This thing, and I say, Yes.
+27:11
+Now it's calling a separate function to confirm ticket purchase. And it's been so. All of this is logic that I added.
+27:18
+Right So if I. Now come to Milestone 6.
+27:28
+I want to. I want to try a different technique. I could implement this. With.
+27:35
+The function calling architecture that I had before. But instead.
+27:41
+I want to do this rag style. Where. At the beginning of the query I process the query.
+27:51
+And I make a decision. Does this? Does this conversation.
+27:57
+Need, some additional context. And then, so I will go, and I will. Inject that context into the conversation for me, I choose to inject it as a system message.
+28:08
+Right after the users query. So I say, well, how.
+28:15
+Are are people enjoying. Yes, pickable.
+28:27
+Okay. So it made a choice here. And let's I'll give you a peak of you know.
+28:35
+How. How that choice was maybe made.
+28:46
+Oh, interesting! Okay, so. This is, it has a very specific, prompt.
+28:54
+That's just about. Making a judgment call on whether I should fetch additional information or not.
+29:03
+And if it does, then do a thing. Now one potential complication here which I resolved in a certain way.
+29:11
+Is once you. Imagine that you're having this conversation with the bot, and this is true with the.
+29:19
+I can see example as well, but. If you make, how do you know and keep track of the fact that, like, Hey, I've already fetched for this query.
+29:29
+Obviously you don't want to keep on injecting. The documents into the history. So you have, like 10 versions.
+29:36
+Of the document. So like you have to do a little bit more kind of implementation. For how to maybe bookkeep or process, whether you already have existing.
+29:49
+Right so. I know that one thing is very paralyzing to an engineer, which is. I kinda wanna follow existing patterns and best practices.
+30:00
+Right now for all the problems I described. One. Not a lot of people are talking about it.
+30:07
+Too much, but also. The ones that are like. There's a lot of people are solving in a lot of different ways.
+30:15
+So we are still in the discovery process. A best pattern. So what I would say. Start simple, and then experiment with like ideas that we've been talking about.
+30:25
+To like, you know. See what makes sense to you, to. Keep things as simple as possible, but wrestle with.
+30:33
+You know how you want to handle. The lack of determinism in some spaces or certain behaviors, right.
+30:41
+Okay, so this is a map of. Of the lab. And we'll come back.
+30:50
+To the 1st part. So. I wanna I wanna do milestone, too.
+31:00
+Together, and then what we'll do is we'll go out and breakout rooms, and we'll have you.
+31:06
+Implement give you some space to cause I don't want. If I just like feed you the answers. I I don't wanna bias, you know, because.
+31:12
+There are really so many ways of of doing this right. So I think the whole part of this is to play a little bit. Alright. But let's just let's do the milestone together to give you a sense for.
+31:22
+What what we what we might do. So I need you all to be my supervisor. And I'll be the driver. So for pair programming.
+31:31
+So I'm gonna start us off on. Milestone one, I think.
+31:39
+Yeah, so here I'm at milestone one. I have the vanilla thing. I took.
+31:46
+The liberty of setting it up, so that. On eats, chats start.
+31:52
+I insert your system prompt into the message history. Right now. It's just a silly one.
+31:58
+And then I refactored it. Remember, this one is just. To keep track of.
+32:05
+The message history from chainlets, perspective. And this is the thing that sends the message to.
+32:11
+To open AI. Or to whatever your whoever your Lm. Is.
+32:17
+Right. Remember that you can call this as many times as you want. You can call this 10 times in this function.
+32:23
+So call as many times as you want, in order to. You know, do whatever it is that you need to do. Okay, so.
+32:30
+1st task, system, prompt. If someone has already done this, can someone like, can we have a bunch of people type out your system prompt? I'm gonna choose one.
+32:41
+So type up a system prompt that you think. Accomplishes this goal.
+32:47
+In the chat, and I'll look for. I'll look for 5 or 6 or 7. You know, possibilities.
+32:54
+So you're trying to guide it appropriately, to understand when should make the call. And then you need a you need a kind of.
+33:01
+Come up with a format that you can later parse. So secret code. You know that is as possible as you can make it.
+33:24
+So we're gonna try. We're gonna try. Mahesh is first.st Which is so we're right. Now we're running this one. Let's see what happens.
+33:32
+Okay, so.
+33:38
+Alright! So we see the first.st Behavioral thing that Mahesh. I don't think you were planning.
+33:45
+Which I just said, Hey. And it's trying to do a function call.
+33:51
+If you look. Yeah. So you have to. You have to specify like. Only do this when the user makes a query of this. This format is that the key.
+34:00
+Yeah, I think so. I think I think. You have to give some guidance on on. Little more guidance, you know. Lms, they're like kind of like.
+34:09
+They're smart idiots, you know. Let's let's see Avinavs, your help, assistant Blah and ask it. Okay, alright. So so I I feel like this is giving me a little bit more.
+34:18
+Discretion. Let's let's. Let's let's give that a try.
+34:29
+But. Yes, okay. I'm just gonna say, yes, I'm now.
+34:38
+I'll help it out to say yes. Now.
+34:45
+Alright!
+34:51
+Now I'm gonna cheat a little bit because he. He said, show times in the prompt. Although it didn't give that format. Let's see what it does.
+34:59
+Okay, so, so. It, which was a reasonable decision. I mean, because maybe they're not playing movies also have show times in the return.
+35:09
+So I feel like I feel like it behaved appropriately here.
+35:16
+I like Saberishias as well here. So I do think that, like longer prompts tend to work a little bit better.
+35:25
+In my experience, too. Even though I do think that this prompt is compact. And it obviously did its job in this use case.
+35:33
+But like, I said, these elements can be real. Dum dum sometimes so. Sometimes like almost belaboring the point.
+35:53
+Alright! So Let's scan ahead.
+36:00
+Cool, cool. Now. Yeah, as you can see, these are clearly working, and then I will say, like by convention.
+36:10
+Sometimes people will list all of the possible functions at the very end. And I think one general guidance that they have.
+36:19
+Is to, even though these titles I feel like are pretty clear to be to even have like a 1 or 2 sentence description of what the function does.
+36:27
+They say, helps it along a lot. So this part of our muscle is really, you know, back down to yield prompt engineering right? So it's how to behaviorally get it under control.
+36:37
+Okay, so we're almost done with this. So let me. Let me switch. Let me see.
+36:49
+Who should I do here?
+36:55
+Okay, so honestly, this one would be fine. And then I just have to think about how to. Parse. This is a.
+37:04
+Looks like a Json, or let's give it a try. Alright! So this is my dude.
+37:10
+Right. By the way, have I convinced anybody to use cursor yet? Have I swayed anyone.
+37:22
+So.
+37:28
+Okay, so. Okay. So what I want to do. If I use cursor, then I use command. K, and I kind of describe what I wanted to do.
+37:38
+So let's see what I want to say. Check to see if response.
+37:45
+Message is a function. Paul. If so, parse it.
+37:53
+And. Call the function.
+37:59
+In movies functions.
+38:05
+Okay, off you go. I'm using Claudet. But I like. I find, clots on it in 4 a.
+38:14
+R, 4. Okay, so let's process this. It's not really. It's kind of assuming that.
+38:23
+I see alright. Well, this I don't know if I totally agree with. How it's doing it, but like it's relying on this.
+38:29
+Exception to decide whether it's a function call.
+38:35
+And then what is this? If function and function call. That's equal to current movies. Okay?
+38:43
+Alright! Alright. So let me fix these 2 issues which are.
+38:51
+Fixing the imports.
+39:02
+Move functions. Purchase on. Okay? Okay, so.
+39:10
+And now look at these 2 things, message, history, pen, role. Function. I don't think you're allowed to make up.
+39:18
+Random roles in Openai. I think it restricts you to the 3.
+39:24
+Try. I I'd be curious to try. I I remember trying it before and getting kick, getting kicked back. But I'm just gonna put it in the system role for now.
+39:32
+It, it may not restrict it. I thought it did, but whatever. And I'm gonna add.
+39:41
+Add a little. Okay, open. I has tool. Oh. Add a little formatting.
+39:47
+To the current. Is
+40:13
+And then so it's appending it to. What history.
+40:21
+Okay, the message history great. And then look at. Look at this decision. Online 79. It is making a decision.
+40:29
+To call. The. To create another generation.
+40:36
+Or, in other words, to pass. This updated message, history, which now includes this.
+40:42
+Into the student. So let's let's give that a run.
+40:49
+Now. And I say, let's say
+40:57
+Get now playing movies.
+41:04
+Oh, wow! One shot! All in one. So let's see, let's. Let's check links. Real quick.
+41:11
+To see.
+41:19
+Yeah, so this 1st message. Just had the function call right? So the. The last output was this function call.
+41:27
+And then in this generation. You see the injected. System message which, as someone mentioned, we maybe could have labeled Tool.
+41:37
+Okay. So either, saying that they're. Well, okay. So, although I don't know if I trust Gbt always for.
+41:46
+That I might try. But. Yeah, I'm I'm wondering what you think about it. Yeah. So I think that's worth.
+41:54
+Testing, but I. I I think that's definitely true at 1 point, and then had the system.
+42:00
+And then. Now look! It took it. This was this was. This I did not choose to show to the user right? We could have.
+42:07
+Right. We could have returned the function call. So this current movie, this, it was just this message of pen we could have also, you know, sent in.
+42:18
+A Cl. Message which would have. Which would have put it to the chandlain app as well. But I of course I don't think that generally makes sense right like, I don't think you want to like output raw function output to the user. Because what if it was an error? What if it was like something weird. I think you always want to let the Lm kind of massage. The response.
+42:37
+Let's let's check our exit conditions for this milestone. So.
+42:43
+We did the normal functions. We did that, and then. We checked out the air conditions.
+42:51
+So that's it. That's milestone, too. So. Any any questions that rolled by, that.
+42:57
+You want me to answer that I that I missed.
+43:03
+I have quick question early back in the days you supposed to like write code.
+43:09
+To take this like response from the Api, put it in nice format, right? Whatever like you think would work and just print it out and.
+43:18
+I believe right now, you suggesting, instead of doing this. According to actually ask open.
+43:25
+AI to nicely format it, or like. Put it in more appropriate for the user format, right? Since we we don't know how user would want to see it. Right? So it's it gives a lot more flexibility in terms of like.
+43:40
+What? How we display data, right? So we don't stick to specific like format. Right. At the same time. It's.
+43:48
+Creates more personalized, based on the previous history. That you had right, that that's my.
+43:54
+Option, right. Are you gonna run around and like, kind of format every? Because, like your apps, gonna be big, potentially right? So like, it's not just this one message. So I I do like the idea of.
+44:03
+Having the Lm. Choose to. Choose how to format it, although, if I although remember, I'm testing it too, right in my evaluation, and if I don't like its style of response. I'll fix it by like in the prompt giving it queues on how I prefer.
+44:16
+The formatting. Abd is asking if we need to have a. While loop, which will be multiplexing between different functions based on the response from the Lm.
+44:26
+Yes, for one of the later milestones. You know, you'll certainly need a while. Loop.
+44:32
+When you have the functioning. If if that's the milestone that you're talking about.
+44:39
+And Ronnie is saying, this works when your product is a chat. And you don't need to store query the data. Actually, I don't know. I don't know what this means anymore, Ronnie, because I think the conversations moved on a little bit.
+44:50
+What? But I was referring to. The coming before. Okay. When when the output is just text, then you can let them massage it. But when you want to store.
+45:00
+The response from the. From the function. Then you care about the passing the data.
+45:06
+Sure, absolutely. Okay, so. What I thought we try is.
+45:14
+Let's we're gonna head out to breakout rooms. So that you can. You know, work in small groups while you're.
+45:23
+Doing this. Now I know that. You know we haven't done breakout rooms yet in this one, so I think the way that we'll do it is.
+45:36
+Kind of interesting. It's a very different style of programming. Yeah. What? What do people like like? Do people like, do you like interacting with these Lms via code?
+45:47
+Can the Garces, and that side. Well, one thing we saw we we played a little bit with the temperature just to see what happened, but at 1 point we kind of were.
+45:57
+Evaluating edge cases and. We asked for it to like find another random movie in the same location. But instead of.
+46:07
+Like another movie, it passed into the movie argument or parameter. The name of the theater.
+46:14
+Oh! And so they're like it led to a key error. And the result I mean, it was, you know, like, but there just was no way of us like manually validating that the parameter calls are correct, like there would have been no way to ensure that that doesn't happen right? So just a little bit.
+46:31
+It feels a little risky, is what I'm saying. Yeah. Yes, yes, I agree. So, yeah, I think you know this.
+46:39
+It really shows how I think, both interesting, you know. Lm, like letting the outside world, but also how fraught it is.
+46:50
+Let me let me turn on the recording for this. Wrap up real quick. Okay as well. Okay. So.
+46:57
+Very magical right in some sense very magical, because. You know the fact that has some element of discretion here is pretty amazing.
+47:05
+But the problem is just the predictability. So I think everyone is running into.
+47:11
+These issues with predictability? Yes. So. There are a lot of like techniques that people use to try to like. Ameliorate this this issue. So.
+47:23
+The 1st step, though, is just to get it working in the base case. So it's kind of working.
+47:29
+Then what you'll want to try to do is people often have to go to fine tuning.
+47:36
+In order to get that reliability of the function calling up. You also. I also alluded to this, the beginning of the.
+47:43
+Of the session, but. You know, the more roles and discretion and brains you put into each prompt.
+47:52
+The less reliable it's going to be compared to. I have a very small role.
+47:58
+Very fixed purpose, and then not only that, but my temperature has been turned down, and I've been fine tuned. If my role is function calling, and even then you might still need to come up with a pattern by which you interlace it with you know.
+48:12
+Proper code in some way, so that it can. You put some rails on it. to to kind of like.
+48:19
+Protect it from from itself, and and kind of retry. Thanks. I saw a lot of people running into interesting.
+48:27
+Problems related to. Let's see, I saw reliability issues. I saw like I saw the non determinism issues. Although.
+48:37
+Although you also saw it kind of working right? So. This is, let me let me share my screen real quick.
+48:48
+So let's see here, where is my.
+48:55
+Okay, here we go. Share screen. Share, share.
+49:02
+Okay, so. I was having this conversation in the main group.
+49:08
+But. We now know. I hope. The gist of how functions work under the hood. Right? So it's you're just telling it to generate some text and then interpreting it and re injecting the results.
+49:21
+You know, back into it or not. Right? Maybe you're like you know, doing it for some other purpose. But all this is stitched together manually.
+49:29
+Now Openai and Anthropic. Both support 1st class. Function calling. So what that means is.
+49:39
+They're trying to help you with this issue by. Instead of you injecting the functions directly into the prompt, you call the client.
+49:49
+Their their client with the functions that have it has available. With a certain like syntax.
+49:55
+It will help you a little bit by like trying to guide the system, to call the right function.
+50:01
+And when it does the function call. To call it in the right format.
+50:08
+However, it's not. It's not a silver bullet solution. Even when you use these 2, you're still gonna run.
+50:14
+Into the same issues, and I think that I don't want. I didn't want you to get dependent on this first.st I wanted you to understand.
+50:21
+Under the hood what they're actually doing, which is just this parsing and like system, prompt massaging right.
+50:28
+But. In practice, you will probably want to have your functions being run in smaller models that have been fine tuned.
+50:39
+To do that function call. Really, consistently. Which it does make a big difference.
+50:46
+If you if you kind of. Use fine tuning in order to generate.
+50:52
+You know, more consistent behavior for your use cases. This comes back to evaluation and the importance of evaluation cause. Guess what evaluation also is.
+51:02
+It's also your fine tuning set. So if you, if the user, we are having some fun and saying, Hey, give me show times on the moon, and then sometimes it. Sometimes the function would.
+51:15
+Say, Hey, no! Boat movies aren't playing on the moon, and sometimes it would pass in the moon right. So what you want to do is generate a lot of those scenarios.
+51:23
+And then fine tune. They spec results. So for.
+51:29
+The project for this this week. You know. Go back and finish up the lab. If you get stuck in any areas, or you just want to see the solution.
+51:40
+Just DM, me on discord, and I'll show you my implementation. I don't mind doing that, but I think that.
+51:49
+One. I don't want to bias you. There really are a lot of ways to do this. So I wanted you to kind of like invent your own pattern.
+51:58
+Because I think that would be more valuable to you. Right now, but if you want to use mine as a reference.
+52:04
+If you get stuck, just let just let me know. I, hopefully, you're spending a decent amount of time on your individual or your group capstone project.
+52:14
+Really excited to see the Demos in a few weeks. So in this. You really, wanna just very simplistically.
+52:21
+Implement, a rag, pipeline and implement a function. Call. So it can be naive. It can be something somewhat contrived, but just again, to like practice integrating that with your application.
+52:33
+Brian says, can we go behind beyond text videos? Absolutely. People are going nuts and doing extra things? Some of one group is like using whisper and doing all kinds of analysis with audio and you know, I think I think some other groups are not using chain lit necessarily, which is, which is totally fine, so.
+52:54
+Yeah, want to see what you want to see, what you build. Any other questions in the last. 2 min that we have here.
+53:04
+Are you planning to have like office hours sometime this week? Maybe I don't know. Friday, like time works for you.
+53:12
+Yeah, perhaps I'll kick off something in the discord, and if there's enough volume.
+53:18
+Then we can, we can. Get some extra sessions together, and just like work on stuff. Alright, so I'll let people go now, but I'll hang out if folks have.
+53:28
+Questions for a few more minutes, but. Other I hope you did enjoy. I had a I had fun. I had fun doing it myself, so hope you hope you enjoyed it as well.
+53:37
+So I'll I'll have a good night. I'll see you later, and I'll hang out here for those who wanna linger.
+53:44
+Hey, Tim? I had one quick question. Yeah, go for it. So.
+53:51
+When trying to implement Llm. As a judge for evaluation. Obviously, for you know, with Lang Smith there's this nice kind of wrap open AI functionality. All the open AI calls beautifully. Get traced.
+54:06
+And you can evaluate them. Add data. To your data set. But. I found that the moment we use llama index.
+54:13
+And we're running rag. I can get like a relevancy score with the rag results. But it's no longer connected to the lengths. Pipeline and those calls are not running through necessarily the same.
+54:29
+Wrapped open AI client, and I wasn't sure like, do we? Is there a way to like the.
+54:37
+But like wrapped client or. Is it just like? Is Llm. As a judge only for like, if we manually implement rag.
+54:46
+Yeah, I mean, this is kind of one I mean. So. Llama Index has a facility to for hooks.
+54:54
+To do? Tracing. They. Unfortunately, I don't know why, but Langmith didn't.
+55:01
+Implement there. So they have this convenient thing where you have like one click observability, where, like the different tracers, they.
+55:12
+Implemented there, the llama index kind of like observability hooks. And then and so basically, you just run those lines.
+55:21
+And then you get exposure to the Api. Calls that Lama Index is doing. I know I don't again. I don't know why, so like you'd have to kind of either. Do it yourself, and understand not the one click version, but the.
+55:34
+The hooks that are available. But that's also one reason I introduced.
+55:40
+Because length fuse does have a lama index integration. And so if you just do this, then.
+55:47
+Then the lava index rag calls will appear. In, in the link views.
+55:53
+The catch there is. You then have to kind of switch to using. The length use evaluation, which is very similar, right? But.
+56:00
+Oh, yeah, that's true. That yeah, you're right. I. Yeah, I have to look at that. Okay, that's helpful. I mean.
+56:07
+I think, based on. What we did tonight. There's going to be enough to evaluate.
+56:13
+On, just like the function calling capabilities that. The rag piece is actually a small piece relative to the function calling. So.
+56:23
+That. Yeah. May not be not merit switching over, but it's useful to know. Thank you. Yeah, like, like, I would focus, I agree on just the basic vibe functionality. And then, really, it's like, when you wanna take it to the next level, or make it better than.
+56:39
+That, I think. Really, that's when you really want to bring the evaluation. And maybe after Demo day, maybe after the end of the class. But hopefully, you have the tools to be able to.
+56:48
+You know, instrument as a judge, hopefully understand that at least. Well, any other, any other questions.
+56:56
+From folks.
+57:08
+Another 10 second window.
+57:20
+Good. You know, while you're while you're while I have you, Sarah.
+57:28
+What's what's the project? Again? I think it was. It was your idea right. Sarah said it was. Your.
+57:34
+Yeah, it was a personal nutritionist. That was for dinner. That's why we call it. Just funny, because I was talking to Ronnie, and apparently he.
+57:44
+Dip does very similar like meal planning.
