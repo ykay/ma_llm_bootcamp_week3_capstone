@@ -1,5 +1,7 @@
 # Week 3 Capstone - Project Overview
 
+## **NOTE**: Please see [this repo](https://github.com/ykay/ma_llm_bootcamp_capstone) for the latest updates on the capstone project.
+
 ## Week 3 Updates
 A RAG pipeline has been implemented in the main Chainlit app. The RAG context mainly depends on the new "function calling" functionality that uses a separate conversation history to decide what function should be called next to progress the main conversation between the user and assistant, which is provided as context in order for the AI to decide the most appropriate function call.
 
